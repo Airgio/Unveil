@@ -1,0 +1,17 @@
+{
+	"socket": true,
+
+	"events": [
+		{
+			"listener": "send",
+			"method" : "messenger::send"
+		}
+	],
+
+	"routes": [
+		{
+			"path": "/",
+			"view": "chat"
+		}
+	]
+}

@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+	<title>Chat Socket IO</title>
+	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	<script   src="https://code.jquery.com/jquery-2.2.4.min.js"   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="   crossorigin="anonymous"></script>
+</head>
+<body>
+	<h1>Chat</h1>
+
+	<input type="text" placeholder="Write something">
+	<button>Send</button>
+	<ul></ul>
+	<script>
+		var socket = io();
+
+		function send(){
+			var _v = $('input').val();
+			socket.emit('send', _v);
+
+			// clear input
+			$('input').val('');
+		}
+
+		$(function(){
+			$('button').on('click', function(){
+				send();
+			});
+		});
+
+		document.addEventListener('keyup', function(e){
+			if(e.keyCode === 13) send();
+		});
+
+		socket.on('receive', function(msg){
+			$('ul').prepend('<li>'+msg+'</li>');
+		});
+	</script>
+</body>
+</html>
