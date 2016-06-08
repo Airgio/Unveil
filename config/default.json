@@ -11,6 +11,10 @@
 	"routes": [
 		{
 			"path": "/",
+			"view": "auth"
+		},
+		{
+			"path": "/chat",
 			"view": "chat"
 		}
 	]
