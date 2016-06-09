@@ -32,6 +32,7 @@
 
             authorizeButton.style.visibility = 'hidden';
             console.log(authResult);
+
             getContacts(authResult.access_token);
 
         } else {
@@ -51,11 +52,25 @@
             $.get(url, function(data){
                 console.log(data);
 
+                var _tmp = [];
+
+                //sessionStorage.setItem('emails', JSON.stringify(data.feed.entry));
+
                 $.each(data.feed.entry, function(ind, val){
-                if(val['gd$email']){
-                    $('ul').append('<li><p>'+val['title'].$t+'<br>'+val['gd$email'][0].address+'</p></li>');
-                }
-            });
+                    if(val['gd$email']){
+                        _tmp.push({
+                            title : val['title'].$t,
+                            email : val['gd$email'][0].address
+                        })
+
+                        /*$('ul').append('<li><p>'+val['title'].$t+'<br>'+val['gd$email'][0].address+'</p></li>');*/
+                    }
+
+                    if(ind === data.feed.entry.length-1){
+                        sessionStorage.setItem('emails', JSON.stringify(_tmp));
+                        window.location = '/event';
+                    }
+                });
         });
     }
 </script>
