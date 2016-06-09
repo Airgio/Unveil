@@ -11,7 +11,7 @@
 		<input type="email" placeholder="votre mail" required name="owner">
 		<input type="text" placeholder="votre nom" name="name" required>
 		<input type="text" placeholder="votre message" name="message" required>
-		<textarea placeholder="vos amis separé par ," name="attendees" required></textarea>
+		<a href="/friends">sélectionner mes amis</a>
 		<input type="submit" content="accèdez à unveil">
 	</form>
 	<script>
@@ -20,9 +20,9 @@
 		$(function () {
 			$('form').submit(function () {
 				var d = $(this).serializeObject();
+					d.attendees = JSON.parse(sessionStorage.invitations);
 				console.log(d);
 				socket.emit('create', d);
-
 				event.preventDefault();
 			})
 		});
