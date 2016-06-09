@@ -7,40 +7,46 @@
 </head>
 <body>
 	<h1>Event</h1>
-
-	<input type="text" placeholder="Ton annonce" id="msg">
-	<input type="text" placeholder="lieu de l'évènement" id="place">
-	<a href="/friends">Invite tes amis</a>
-	<button>Envoyer l'annonce</button>
-
+	<form>
+		<input type="email" placeholder="votre mail" required name="owner">
+		<input type="text" placeholder="votre nom" name="name" required>
+		<input type="text" placeholder="votre message" name="message" required>
+		<a href="/friends">sélectionner mes amis</a>
+		<input type="submit" content="accèdez à unveil">
+	</form>
 	<script>
 		var socket = io();
 
-		function createRoom(){
-			var _v = $('#msg').val();
-			var _p= $('#place').val();
-			socket.emit('create', _v, _p);
+		$(function () {
+			$('form').submit(function () {
+				var d = $(this).serializeObject();
+					d.attendees = JSON.parse(sessionStorage.invitations);
+				console.log(d);
+				socket.emit('create', d);
+				event.preventDefault();
+			})
+		});
 
-			// clear input
-			//$('input').val('');
-		}
+		socket.on('created', function (d) {
+			console.log(d);
+		})
 
-		$(function(){
-			$('button').on('click', function(){
-				createRoom();
+		$.fn.serializeObject = function()
+		{
+			var o = {};
+			var a = this.serializeArray();
+			$.each(a, function() {
+				if (o[this.name] !== undefined) {
+					if (!o[this.name].push) {
+						o[this.name] = [o[this.name]];
+					}
+					o[this.name].push(this.value || '');
+				} else {
+					o[this.name] = this.value || '';
+				}
 			});
-		});
-
-		document.addEventListener('keyup', function(e){
-			if(e.keyCode === 13) createRoom();
-		});
-
-		var _ownerName = data.feed.author[0].name.$t,
-				_ownerMail = data.feed.author[0].email.$t;
-
-		console.log (_ownerMail);
-		socket.emit('create', _ownerName, _ownerMail,null, null, null);
-
+			return o;
+		};
 	</script>
 
 </body>
