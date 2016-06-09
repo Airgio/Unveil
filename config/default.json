@@ -28,6 +28,10 @@
 		{
 			"path": "/confirm",
 			"view": "confirm"
+		},
+		{
+			"path": "/login",
+			"view": "login"
 		}
 	]
 }
