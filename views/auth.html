@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+    <title>Bievenue sur Unveil !</title>
+</head>
+<body>
+<!-- Oauth -->
+<button id="authorize-button" style="visibility: hidden">Identifiez vous via Google</button>
+
+<div id="content"></div>
+<p>Retrieves your profile name using the Google Plus API.</p>
+<ul></ul>
+
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script>
+    var clientId = '605751688227-u0fliiq32028oh6uim9mguae8hqfb7jj.apps.googleusercontent.com';
+    var apiKey = 'AIzaSyAOpIxefwOLJi7luSaFxNNSjNn7EjJWru0';
+    var scopes = 'https://www.googleapis.com/auth/contacts.readonly';
+    var socket = io();
+    
+    function handleClientLoad() {
+        gapi.client.setApiKey(apiKey);
+        window.setTimeout(checkAuth,1);
+    }
+    function checkAuth() {
+        gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: true}, handleAuthResult);
+    }
+    function handleAuthResult(authResult) {
+        var authorizeButton = document.getElementById('authorize-button');
+        if (authResult && !authResult.error) {
+
+            authorizeButton.style.visibility = 'hidden';
+            console.log(authResult);
+            getContacts(authResult.access_token);
+
+        } else {
+            authorizeButton.style.visibility = '';
+            authorizeButton.onclick = handleAuthClick;
+        }
+    }
+    function handleAuthClick(event) {
+        gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: false}, handleAuthResult);
+        return false;
+    }
+
+    function getContacts(token){
+        var url = 'https://www.google.com/m8/feeds/contacts/default/full/'
+        + '?access_token='+token+'&alt=json&max-results=1000';
+
+            $.get(url, function(data){
+                console.log(data);
+
+                $.each(data.feed.entry, function(ind, val){
+                if(val['gd$email']){
+                    $('ul').append('<li><p>'+val['title'].$t+'<br>'+val['gd$email'][0].address+'</p></li>');
+                }
+            });
+        });
+    }
+</script>
+<script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
+</body>
+</html>
