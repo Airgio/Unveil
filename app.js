@@ -13,6 +13,7 @@ app.socket = require('./drivers/socket')(app);
 app.user = require('./services/user')(app);
 app.messenger = require('./services/messenger')(app);
 app.mailing = require('./services/mailing')(app);
+app.room = require('./services/room')(app);
 
 app.server.create();
 

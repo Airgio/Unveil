@@ -8,14 +8,40 @@
 <body>
 	<h1>Event</h1>
 
-	<input type="text" placeholder="Ton annonce">
-	<input type="text" placeholder="Lieux (facultatif)">
-	<input type="text" placeholder="Date (facultatif)">
+	<input type="text" placeholder="Ton annonce" id="msg">
+	<input type="text" placeholder="lieu de l'évènement" id="place">
 	<a href="/friends">Invite tes amis</a>
 	<button>Envoyer l'annonce</button>
-	<ul></ul>
+
 	<script>
+		var socket = io();
+
+		function createRoom(){
+			var _v = $('#msg').val();
+			var _p= $('#place').val();
+			socket.emit('create', _v, _p);
+
+			// clear input
+			//$('input').val('');
+		}
+
+		$(function(){
+			$('button').on('click', function(){
+				createRoom();
+			});
+		});
+
+		document.addEventListener('keyup', function(e){
+			if(e.keyCode === 13) createRoom();
+		});
+
+		var _ownerName = data.feed.author[0].name.$t,
+				_ownerMail = data.feed.author[0].email.$t;
+
+		console.log (_ownerMail);
+		socket.emit('create', _ownerName, _ownerMail,null, null, null);
 
 	</script>
+
 </body>
 </html>
