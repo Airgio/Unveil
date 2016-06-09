@@ -19,11 +19,12 @@
 
 		$(function () {
 			$('form').submit(function () {
+				event.preventDefault();
 				var d = $(this).serializeObject();
 					d.attendees = JSON.parse(sessionStorage.invitations);
 				console.log(d);
 				socket.emit('create', d);
-				event.preventDefault();
+				socket.emit('post', d);
 			})
 		});
 

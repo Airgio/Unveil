@@ -1,21 +1,23 @@
 var Email = require('email').Email;
 
 module.exports = function(app){
-	function sendemail(dest, name, lien){
+	function sendemail(data, email){
+		console.log(email);
 		var myMsg = new Email({ 
 			from: 'join@unveil.com',
-			to:   dest,
-			subject: name + "à une grande nouvelle à t'annoncer",
+			to:   email,
+			subject: data.name + " à une grande nouvelle à t'annoncer",
 			bodyType: "html",
-			body: '<table><tr><td><h1 style="color: red">HTML body</h1><a href"'+ lien +'">Clique ici</a></td></tr></table>'
+			body: '<table><tr><td><h1 style="color: red">HTML body</h1><a href="http://localhost:3000/login">Clique ici</a></td></tr></table>'
 		});
-		myMsg.send(function(err){ '...' });
+		myMsg.send();
 	}
 
 	return {
-		send : function(emails){
-			for(var i=0; i<emails.length; i++){
-				sendemail(emails[i]);
+		post : function(data) {
+
+			for (var i = 0; i < data.attendees.length; i++) {
+				sendemail(data, data.attendees[i]);
 			}
 		}
 	}
