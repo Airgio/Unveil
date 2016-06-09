@@ -11,6 +11,7 @@ app.socket = require('./drivers/socket')(app);
 
 
 app.messenger = require('./services/messenger')(app);
+app.mailing = require('./services/mailing')(app);
 
 app.server.create();
 
