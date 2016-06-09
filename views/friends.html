@@ -3,16 +3,57 @@
 <head>
 	<title>Unveil | Friends</title>
 	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+	<style>
+		li {
+			cursor: pointer;
+		}
+		.selected {
+			color: tomato;
+		}
+	</style>
 </head>
 <body>
 	<h1>Friends</h1>
+	<a href="/event" id="back">Valider</a>
 	<ul></ul>
 	<script>
 		
-        $.each(JSON.parse(sessionStorage.emails), function(ind, val){
-                $('ul').append('<li><p>'+val.title+'<br>'+val.email+'</p></li>');
-        });
+		var emails = JSON.parse(sessionStorage.emails);
+
+		$.each(emails, function(ind, val){
+			$('ul').append('<li data-index='+ind+'><p>'+val.title+'<br>'+val.email+'</p></li>');
+		});
+
+		$(function(){
+
+			var _tmp_invitations = [];
+
+			$('li').click(function(){
+				// Get index of each item
+				var _tmp_id = parseInt($(this).attr('data-index'));
+				// Add class selected
+				$(this).toggleClass('selected');
+
+
+				var _ind = parseInt(_tmp_invitations.indexOf(_tmp_id));
+				if(_ind != -1) {
+					_tmp_invitations.splice(_ind, _ind);
+				} else {
+					_tmp_invitations.push(_tmp_id);
+				}
+			});
+
+			$('#back').click(function(){
+				var _invitations = [];
+
+				for(var i=0; i <= _tmp_invitations.length; i++){
+					_invitations.push(emails[_tmp_invitations[i]]);
+				}
+				sessionStorage.invitations = JSON.stringify(_invitations);
+			});
+		});
+
 	</script>
 </body>
 </html>
