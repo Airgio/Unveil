@@ -14,8 +14,20 @@
 			"view": "auth"
 		},
 		{
+			"path": "/event",
+			"view": "event"
+		},
+		{
 			"path": "/chat",
 			"view": "chat"
+		},
+		{
+			"path": "/friends",
+			"view": "friends"
+		},
+		{
+			"path": "/confirm",
+			"view": "confirm"
 		}
 	]
 }
