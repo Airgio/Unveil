@@ -1,6 +1,4 @@
-var Email = require('email').Email,
-	fs = require('fs'),
-	mail_file = app.root + '/views/mail.html';
+var Email = require('email').Email;
 
 module.exports = function(app){
 	function sendemail(dest, name, lien){
