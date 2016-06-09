@@ -20,7 +20,7 @@ module.exports = function(app){
 		listen : function(){
 			this.instance.listen(3000, function(){
 				console.log('Server Listening on *:3000');
-			})
+			});
 		}
 	}
 }
