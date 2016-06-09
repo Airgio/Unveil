@@ -46,11 +46,17 @@
 
 			$('#back').click(function(){
 				var _invitations = [];
+				var _invitations_emails = [];
 
-				for(var i=0; i <= _tmp_invitations.length; i++){
+				for(var i=0; i < _tmp_invitations.length; i++){
 					_invitations.push(emails[_tmp_invitations[i]]);
+					console.log(_invitations);
 				}
-				sessionStorage.invitations = JSON.stringify(_invitations);
+				$.each(_invitations, function(ind,val){
+					_invitations_emails.push(val.email);
+					console.log(val.email);
+				});
+				sessionStorage.invitations = JSON.stringify(_invitations_emails);
 			});
 		});
 
