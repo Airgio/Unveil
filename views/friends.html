@@ -7,6 +7,12 @@
 </head>
 <body>
 	<h1>Friends</h1>
-
+	<ul></ul>
+	<script>
+		
+        $.each(JSON.parse(sessionStorage.emails), function(ind, val){
+                $('ul').append('<li><p>'+val.title+'<br>'+val.email+'</p></li>');
+        });
+	</script>
 </body>
 </html>

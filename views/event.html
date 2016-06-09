@@ -8,33 +8,14 @@
 <body>
 	<h1>Event</h1>
 
-	<input type="text" placeholder="Write something">
-	<button>Send</button>
+	<input type="text" placeholder="Ton annonce">
+	<input type="text" placeholder="Lieux (facultatif)">
+	<input type="text" placeholder="Date (facultatif)">
+	<a href="/friends">Invite tes amis</a>
+	<button>Envoyer l'annonce</button>
 	<ul></ul>
 	<script>
-		var socket = io();
 
-		function send(){
-			var _v = $('input').val();
-			socket.emit('send', _v);
-
-			// clear input
-			$('input').val('');
-		}
-
-		$(function(){
-			$('button').on('click', function(){
-				send();
-			});
-		});
-
-		document.addEventListener('keyup', function(e){
-			if(e.keyCode === 13) send();
-		});
-
-		socket.on('receive', function(msg){
-			$('ul').prepend('<li>'+msg+'</li>');
-		});
 	</script>
 </body>
 </html>
