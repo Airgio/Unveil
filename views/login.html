@@ -2,13 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>Login</title>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 </head>
 <body>
-<form action="/login" method="post">
-    <input type="text" placeholder="votre mail" required name="username">
-    <input type="text" placeholder="votre pseudo" name="nickname" required>
+<form>
+    <input type="email" placeholder="votre mail" required name="owner">
+    <input type="text" placeholder="votre nom" name="name" required>
+    <input type="text" placeholder="votre message" name="message" required>
+    <textarea placeholder="vos amis separé par ," name="attendees" required></textarea>
     <input type="submit" content="accèdez à unveil">
 </form>
+<script>
+    var socket = io();
+
+    $(function () {
+        $('form').submit(function () {
+            var d = $(this).serializeObject();
+            console.log(d);
+            socket.emit('create', d);
+
+            event.preventDefault();
+        })
+    });
+
+    socket.on('created', function (d) {
+        console.log(d);
+    })
+
+    $.fn.serializeObject = function()
+    {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function() {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+</script>
+
 </body>
 </html>

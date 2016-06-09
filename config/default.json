@@ -5,6 +5,14 @@
 		{
 			"listener": "send",
 			"method" : "messenger::send"
+		},
+		{
+			"listener": "create",
+			"method" : "room::create"
+		},
+		{
+			"listener": "join",
+			"method" : "room::join"
 		}
 	],
 
