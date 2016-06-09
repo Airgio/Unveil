@@ -22,7 +22,7 @@
 				event.preventDefault();
 				var d = $(this).serializeObject();
 					d.attendees = JSON.parse(sessionStorage.invitations);
-				console.log(d);
+					d.url = window.location.protocol +'//'+ window.location.hostname +(':'+ window.location.port || '') ;
 				socket.emit('create', d);
 				socket.emit('post', d);
 			})

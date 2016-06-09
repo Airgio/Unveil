@@ -8,7 +8,7 @@ module.exports = function(app){
 			to:   email,
 			subject: data.name + " à une grande nouvelle à t'annoncer",
 			bodyType: "html",
-			body: '<table><tr><td><h1 style="color: red">HTML body</h1><a href="http://localhost:3000/login">Clique ici</a></td></tr></table>'
+			body: '<table><tr><td><h1 style="color: red">HTML body</h1><a href="'+data.url+'/login">Clique ici</a></td></tr></table>'
 		});
 		myMsg.send();
 	}
