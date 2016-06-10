@@ -50,6 +50,8 @@
 	</section>
 
 
+	<section id="unveil">Révélation</section>
+
 
 	<script>
 
@@ -70,10 +72,12 @@
 				$('#create_room').hide();
 				$('#chat').hide();
 				$('#contact').hide();
+				$('#unveil').hide();
 			} else {
 				$('#login').hide();
 				$('#chat').hide();
 				$('#contact').hide();
+				$('#unveil').hide();
 			}
 
 			// CREATE ROOM
@@ -134,6 +138,7 @@
 	            var d = $(this).serializeObject();
 	            d.email = user_email;
 	            console.log(d);
+	            socket.id = $(this).serializeObject().name;
 	            socket.emit('join', d);
 
 	            event.preventDefault();
@@ -155,14 +160,23 @@
 
 		socket.on('joined', function (d) {
 	        console.log(d);
-	        $('#login').hide();
-	        $('#chat').show();
+	        if(d.success) {
+	        	$('#login').hide();
+	        	$('#chat').show();
+	        }
+	    });
+
+		socket.on('unveil', function (d) {
+	        console.log(d);
+
+	        $('#unveil').show().append(d.message);
 	    });
 
 	    // CHAT
 	    function send(){
 			var _v = $('#user_msg').val();
 			socket.emit('send', _v);
+			console.log(socket);
 
 			// clear input
 			$('#user_msg').val('');
@@ -173,7 +187,7 @@
 		});
 
 		socket.on('receive', function(msg){
-			$('#conversation').prepend('<li>'+msg+'</li>');
+			$('#conversation').prepend('<li><strong>'+socket.id+'</strong><br>'+msg+'</li>');
 		});
 
 		$.fn.serializeObject = function(){
