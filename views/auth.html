@@ -1,15 +1,44 @@
 <!doctype html>
 <html>
 <head>
-    <title>Bievenue sur Unveil !</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://use.typekit.net/dpg5yxz.js"></script>
+    <script>try{Typekit.load({ async: true });}catch(e){}</script>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/normalize.css">
+    <title>Unveil | faites lever le voile sur vos secrets</title>
 </head>
 <body>
 <!-- Oauth -->
-<button id="authorize-button" style="visibility: hidden">Identifiez vous via Google</button>
+<main>
+    <ul class="steps">
+        <li>connectez-vous</li>
+        <li class="disabled">paramétrez-votre secret</li>
+        <li class="disabled">invitez vos proches</li>
+    </ul>
 
-<div id="content"></div>
-<p>Retrieves your profile name using the Google Plus API.</p>
-<ul></ul>
+    <div class="slides_container">
+    <section id="google_connect" class="slide">
+        <p>Connectez-vous avec votre compte gmail pour accéder à vos contacts.</p>
+        <button id="authorize-button" style="visibility: hidden" class="btn">Identifiez vous via Google</button>
+    </section>
+
+    <section id="message_creation" class="slide">
+        <p>Connectez-vous avec votre compte gmail pour accéder à vos contacts.</p>
+        <button style="visibility: hidden" class="btn">Identifiez vous via Google</button>
+    </section>
+
+        <section id="message_creation" class="slide">
+            <p>Connectez-vous avec votre compte gmail pour accéder à vos contacts.</p>
+            <button style="visibility: hidden" class="btn">Identifiez vous via Google</button>
+        </section>
+
+    </div>
+</main>
+
+
+
 
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
@@ -68,7 +97,8 @@
 
                     if(ind === data.feed.entry.length-1){
                         sessionStorage.setItem('emails', JSON.stringify(_tmp));
-                        window.location = '/event';
+                        $('.steps li:first-child').addClass('done');
+                        //swindow.location = '/event';
                     }
                 });
         });

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://use.typekit.net/dpg5yxz.js"></script>
+    <script>try{Typekit.load({ async: true });}catch(e){}</script>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/normalize.css">
+    <link rel="stylesheet" href="/assets/js/script.js">
+    <title>Unveil | faites lever le voile sur vos secrets</title>
+</head>
+<body>
+
+    <main>
+
+        <img src="/assets/img/logo.svg" class="logo" alt="Unveil, faites lever le voile sur vos secrets">
+
+        <h1>Faites lever le voile sur vos secrets</h1>
+
+        <section class="btn_container">
+            <a href="/login" class="btn">créez votre secret</a>
+            <a href="/event" class="btn btn_alter">rejoignez votre secret</a>
+        </section>
+
+
+    </main>
+
+        <i class="helper">i</i>
+
+        <section class="helper_content">
+            <p>
+                <strong>reveal</strong> est l'application qui vous permet de révéler à vos amis un secret, un tournant de votre vie, une information que vous avez envie de partager uniquement les personnes qui vont sont le plus proches.
+                <i class="closer">x</i>
+            </p>
+        </section>
+
+
+    <script>
+        $(function(){
+
+            viewHelperContent('.closer');
+            viewHelperContent('.helper');
+
+
+            function viewHelperContent(button){
+                $(button).click(function(){
+                    $('.helper_content').toggleClass('visible');
+                    $('main').toggleClass('downscaled');
+                })}
+            ;
+
+
+        })
+    </script>
+
+</body>
+</html>

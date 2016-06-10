@@ -1,3 +1,5 @@
+var express = require('express');
+
 module.exports = function(app){
 
 	return {
@@ -14,6 +16,13 @@ module.exports = function(app){
 					});
 				})(_routes[i])
 			}
+
+			//static files
+			exp.use('/assets', express.static(app.root + '/assets'));
 		}
+
+
+
+
 	}
 }

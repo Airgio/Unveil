@@ -24,6 +24,10 @@
 	"routes": [
 		{
 			"path": "/",
+			"view": "index"
+		},
+		{
+			"path": "/login",
 			"view": "auth"
 		},
 		{
