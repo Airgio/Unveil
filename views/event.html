@@ -50,7 +50,7 @@
 	</section>
 
 
-	<section id="unveil">Révélation</section>
+	<section id="unveil">Révélation : </section>
 
 
 	<script>
@@ -93,6 +93,7 @@
 					d.url = window.location.protocol +'//'+ window.location.hostname +(':'+ window.location.port || '') ;
 				socket.emit('create', d);
 				socket.emit('post', d);
+				socket.io.nickname = d.name;
 			});
 
 			// CONTACT
@@ -138,7 +139,7 @@
 	            var d = $(this).serializeObject();
 	            d.email = user_email;
 	            console.log(d);
-	            socket.id = $(this).serializeObject().name;
+	            socket.io.nickname = $(this).serializeObject().name;
 	            socket.emit('join', d);
 
 	            event.preventDefault();
@@ -187,7 +188,7 @@
 		});
 
 		socket.on('receive', function(msg){
-			$('#conversation').prepend('<li><strong>'+socket.id+'</strong><br>'+msg+'</li>');
+			$('#conversation').prepend('<li><strong>'+socket.nickname+'</strong><br>'+msg+'</li>');
 		});
 
 		$.fn.serializeObject = function(){

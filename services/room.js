@@ -36,7 +36,8 @@ module.exports = function(app){
             this.emit('joined', room ? {success : true, room : room} : { success : false });
 
             if(room.attendees.length === 0){
-                app.socket.io.to(room.owner).emit('unveil', room)
+                app.socket.io.to(room.owner).emit('unveil', room);
+                app.room.rooms.splice(app.room.rooms.indexOf(room),1);
             }
 
         }
