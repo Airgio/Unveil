@@ -24,9 +24,16 @@ module.exports = function(app){
         join : function(email){
             var room = _.find(app.room.rooms, function(r){ return r.attendees.indexOf(email) !== -1; });
 
-            this.emit('joined', room);
+            if(room){
+                this.join(room.owner);
+                room.attendees.splice(room.attendees.indexOf(email), 1);
+            }
+
+            this.emit('joined', room ? {success : true, room : room} : { success : false });
+
+            if(room.attendees.length === 0){
+                app.socket.io.to(room.owner).emit('unveil', room)
+            }
         }
-
-
     }
 }
