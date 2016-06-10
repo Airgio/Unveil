@@ -35,10 +35,7 @@
 
 	<section id="login">
 		<form id="form_login">
-		    <input type="email" placeholder="votre mail" required name="owner">
-		    <input type="text" placeholder="votre nom" name="name" required>
-		    <input type="text" placeholder="votre message" name="message" required>
-		    <textarea placeholder="vos amis separé par ," name="attendees" required></textarea>
+		    <input type="text" placeholder="votre pseudo" name="name" required>
 		    <input type="submit" content="accèdez à unveil">
 		</form>
 	</section>
@@ -58,7 +55,7 @@
 
 		
 		var socket = io();
-		var emails = JSON.parse(sessionStorage.emails);
+		var emails = !sessionStorage.emails ? null : JSON.parse(sessionStorage.emails) ;
 		var url = window.location.search;
 		var user_email = url.substring(url.lastIndexOf('=')+1) || 0;
 
@@ -106,7 +103,7 @@
 
 				var _ind = parseInt(_tmp_invitations.indexOf(_tmp_id));
 				if(_ind != -1) {
-					_tmp_invitations.splice(_ind, _ind);
+					_tmp_invitations.splice(_ind, 1);
 				} else {
 					_tmp_invitations.push(_tmp_id);
 				}
@@ -135,8 +132,9 @@
 			// LOGIN
 			$('#form_login').submit(function () {
 	            var d = $(this).serializeObject();
+	            d.email = user_email;
 	            console.log(d);
-	            socket.emit('create', d);
+	            socket.emit('join', d);
 
 	            event.preventDefault();
 	        });
@@ -151,6 +149,7 @@
 		socket.on('created', function (d) {
 			console.log(d);
 			$('#create_room').hide();
+			//$('#login').hide();
 			$('#chat').show();
 		});
 

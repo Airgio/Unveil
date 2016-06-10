@@ -1,3 +1,5 @@
+var _ = require('underscore');
+
 module.exports = function(app){
 
     var model = function (data) {
@@ -23,6 +25,7 @@ module.exports = function(app){
         },
 
         join : function(data){
+            console.log('Kikou');
             var room = _.find(app.room.rooms, function(r){ return r.attendees.indexOf(data.email) !== -1; });
 
 
