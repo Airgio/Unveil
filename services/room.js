@@ -18,6 +18,7 @@ module.exports = function(app){
 
             var room = new model(data);
             app.room.rooms.push(room);
+            //app.mailing.post(room);
             this.emit('created', room);
         },
 
