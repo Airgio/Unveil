@@ -4,36 +4,180 @@
 	<title>Unveil | Event</title>
 	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+	<style>
+		li {
+			cursor: pointer;
+		}
+		.selected {
+			color: tomato;
+		}
+	</style>
 </head>
 <body>
-	<h1>Event</h1>
-	<form>
-		<input type="email" placeholder="votre mail" required name="owner">
-		<input type="text" placeholder="votre nom" name="name" required>
-		<input type="text" placeholder="votre message" name="message" required>
-		<a href="/friends">sélectionner mes amis</a>
-		<input type="submit" content="accèdez à unveil">
-	</form>
+	<section id="create_room">
+		<h1>Event</h1>
+		<form id="form_create">
+			<input type="email" placeholder="votre mail" required name="owner">
+			<input type="text" placeholder="votre nom" name="name" required>
+			<input type="text" placeholder="votre message" name="message" required>
+			<button type="button" id="select_friends">sélectionner mes amis</button>
+			<input type="submit" value="accèdez à unveil">
+		</form>
+	</section>
+
+
+	<section id="contact">
+		<h1>Friends</h1>
+		<button type="button" id="back">Valider</button>
+		<ul id="conatc_list"></ul>
+	</section>
+
+
+	<section id="login">
+		<form id="form_login">
+		    <input type="email" placeholder="votre mail" required name="owner">
+		    <input type="text" placeholder="votre nom" name="name" required>
+		    <input type="text" placeholder="votre message" name="message" required>
+		    <textarea placeholder="vos amis separé par ," name="attendees" required></textarea>
+		    <input type="submit" content="accèdez à unveil">
+		</form>
+	</section>
+
+
+	<section id="chat">
+		<h1>Chat</h1>
+
+		<input id="user_msg" type="text" placeholder="Write something">
+		<button id="valid_msg">Send</button>
+		<ul id="conversation"></ul>
+	</section>
+
+
+
 	<script>
+
+		
 		var socket = io();
+		var emails = JSON.parse(sessionStorage.emails);
+		var url = window.location.search;
+		var user_email = url.substring(url.lastIndexOf('=')+1) || 0;
+
+		// Create list of contact
+		$.each(emails, function(ind, val){
+			$('#conatc_list').append('<li data-index='+ind+'><p>'+val.title+'<br>'+val.email+'</p></li>');
+		});
 
 		$(function () {
-			$('form').submit(function () {
+
+			if(user_email !== 0){
+				$('#create_room').hide();
+				$('#chat').hide();
+				$('#contact').hide();
+			} else {
+				$('#login').hide();
+				$('#chat').hide();
+				$('#contact').hide();
+			}
+
+			// CREATE ROOM
+			$('#select_friends').click(function(){
+				$('#create_room').hide();
+				$('#contact').show();
+			});
+
+			$('#form_create').submit(function () {
 				event.preventDefault();
 				var d = $(this).serializeObject();
 					d.attendees = JSON.parse(sessionStorage.invitations);
 					d.url = window.location.protocol +'//'+ window.location.hostname +(':'+ window.location.port || '') ;
 				socket.emit('create', d);
 				socket.emit('post', d);
-			})
+			});
+
+			// CONTACT
+			var _tmp_invitations = [];
+
+			$('li').click(function(){
+				// Get index of each item
+				var _tmp_id = parseInt($(this).attr('data-index'));
+				// Add class selected
+				$(this).toggleClass('selected');
+
+
+				var _ind = parseInt(_tmp_invitations.indexOf(_tmp_id));
+				if(_ind != -1) {
+					_tmp_invitations.splice(_ind, _ind);
+				} else {
+					_tmp_invitations.push(_tmp_id);
+				}
+			});
+
+			$('#back').click(function(){
+				var _invitations = [];
+				var _invitations_emails = [];
+
+				for(var i=0; i < _tmp_invitations.length; i++){
+					_invitations.push(emails[_tmp_invitations[i]]);
+					console.log(_invitations);
+				}
+				$.each(_invitations, function(ind,val){
+					_invitations_emails.push(val.email);
+					console.log(val.email);
+				});
+				sessionStorage.invitations = JSON.stringify(_invitations_emails);
+
+				$('#contact').hide();
+				$('#create_room').show();
+
+				event.preventDefault();
+			});
+
+			// LOGIN
+			$('#form_login').submit(function () {
+	            var d = $(this).serializeObject();
+	            console.log(d);
+	            socket.emit('create', d);
+
+	            event.preventDefault();
+	        });
+
+	        // CHAT
+	        $('#valid_msg').on('click', function(){
+				send();
+			});
+
 		});
 
 		socket.on('created', function (d) {
 			console.log(d);
-		})
+			$('#create_room').hide();
+			$('#chat').show();
+		});
 
-		$.fn.serializeObject = function()
-		{
+		socket.on('joined', function (d) {
+	        console.log(d);
+	        $('#login').hide();
+	        $('#chat').show();
+	    });
+
+	    // CHAT
+	    function send(){
+			var _v = $('#user_msg').val();
+			socket.emit('send', _v);
+
+			// clear input
+			$('#user_msg').val('');
+		}
+
+		document.addEventListener('keyup', function(e){
+			if(e.keyCode === 13) send();
+		});
+
+		socket.on('receive', function(msg){
+			$('#conversation').prepend('<li>'+msg+'</li>');
+		});
+
+		$.fn.serializeObject = function(){
 			var o = {};
 			var a = this.serializeArray();
 			$.each(a, function() {

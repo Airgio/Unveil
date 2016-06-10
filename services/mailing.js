@@ -1,5 +1,5 @@
 var Email = require('email').Email;
-var	fs = require('fs').readFile;
+//var	fs = require('fs').readFile;
 
 module.exports = function(app){
 
@@ -15,9 +15,6 @@ module.exports = function(app){
 			//	console.log(data);
 			// })
 		});
-		console.log(fs.readFile('/views/invite', function(err, data){
-
-			}));
 		myMsg.send();
 	}
 
