@@ -155,7 +155,20 @@ ____________________________________*/
     letter-spacing:0;
     margin:10px auto;
 }
-.
+
+.slide_viewport {
+    width:100vw;
+    overflow:hidden;
+}
+.slides_container {
+    width:300vw;
+    transition: all ease-out 0.2s;
+}
+.slide {
+
+    width:100vw;
+    float:left;
+}
 .slide p {
     width:80%;
     margin:100px auto 0;
