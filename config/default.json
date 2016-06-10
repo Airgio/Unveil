@@ -13,6 +13,11 @@
 		{
 			"listener": "join",
 			"method" : "room::join"
+		},
+
+		{
+			"listener": "post",
+			"method" : "mailing::post"
 		}
 	],
 
