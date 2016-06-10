@@ -1,5 +1,5 @@
 var Email = require('email').Email;
-var	fs = require('fs');
+var	fs = require('fs').readFile;
 
 module.exports = function(app){
 
@@ -11,10 +11,9 @@ module.exports = function(app){
 			subject: data.name + " à une grande nouvelle à t'annoncer",
 			bodyType: "html",
 			body: '<table><tr><td><h1 style="color: red">HTML body</h1><a href="'+data.url+'/login">Clique ici</a></td></tr></table>'
-			//body : fs.readFile('../views/invite', 'utf8', function(){
-
-
-			//})
+			//body : read('./views/invite.html', function(err, data) {
+			//	console.log(data);
+			// })
 		});
 		console.log(fs.readFile('/views/invite', function(err, data){
 
