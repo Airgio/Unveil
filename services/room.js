@@ -22,12 +22,13 @@ module.exports = function(app){
             this.emit('created', room);
         },
 
-        join : function(email){
-            var room = _.find(app.room.rooms, function(r){ return r.attendees.indexOf(email) !== -1; });
+        join : function(data){
+            var room = _.find(app.room.rooms, function(r){ return r.attendees.indexOf(data.email) !== -1; });
+
 
             if(room){
                 this.join(room.owner);
-                room.attendees.splice(room.attendees.indexOf(email), 1);
+                room.attendees.splice(room.attendees.indexOf(data.email), 1);
             }
 
             this.emit('joined', room ? {success : true, room : room} : { success : false });
@@ -35,6 +36,7 @@ module.exports = function(app){
             if(room.attendees.length === 0){
                 app.socket.io.to(room.owner).emit('unveil', room)
             }
+
         }
     }
 }
