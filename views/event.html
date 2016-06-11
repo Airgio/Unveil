@@ -3,7 +3,7 @@
 <head>
 	<title>Unveil | Event</title>
 	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 	<style>
 		li {
 			cursor: pointer;
@@ -29,7 +29,7 @@
 	<section id="contact">
 		<h1>Friends</h1>
 		<button type="button" id="back">Valider</button>
-		<ul id="conatc_list"></ul>
+		<ul id="contact_list"></ul>
 	</section>
 
 
@@ -53,160 +53,162 @@
 	<section id="unveil">Révélation : </section>
 
 
-	<script>
+<script>
+	var socket = io();
+	var emails = !sessionStorage.emails ? null : JSON.parse(sessionStorage.emails) ;
+	var url = window.location.search;
+	var user_email = url.substring(url.lastIndexOf('=')+1) || 0;
 
-		
-		var socket = io();
-		var emails = !sessionStorage.emails ? null : JSON.parse(sessionStorage.emails) ;
-		var url = window.location.search;
-		var user_email = url.substring(url.lastIndexOf('=')+1) || 0;
+	// Create list of contact
+	$.each(emails, function(ind, val){
+		$('#contact_list').append('<li data-index='+ind+'><p>'+val.title+'<br>'+val.email+'</p></li>');
+	});
 
-		// Create list of contact
-		$.each(emails, function(ind, val){
-			$('#conatc_list').append('<li data-index='+ind+'><p>'+val.title+'<br>'+val.email+'</p></li>');
-		});
+	$(function () {
 
-		$(function () {
-
-			if(user_email !== 0){
-				$('#create_room').hide();
-				$('#chat').hide();
-				$('#contact').hide();
-				$('#unveil').hide();
-			} else {
-				$('#login').hide();
-				$('#chat').hide();
-				$('#contact').hide();
-				$('#unveil').hide();
-			}
-
-			// CREATE ROOM
-			$('#select_friends').click(function(){
-				$('#create_room').hide();
-				$('#contact').show();
-			});
-
-			$('#form_create').submit(function () {
-				event.preventDefault();
-				var d = $(this).serializeObject();
-					d.attendees = JSON.parse(sessionStorage.invitations);
-					d.url = window.location.protocol +'//'+ window.location.hostname +(':'+ window.location.port || '') ;
-				socket.emit('create', d);
-				socket.emit('post', d);
-				socket.io.nickname = d.name;
-			});
-
-			// CONTACT
-			var _tmp_invitations = [];
-
-			$('li').click(function(){
-				// Get index of each item
-				var _tmp_id = parseInt($(this).attr('data-index'));
-				// Add class selected
-				$(this).toggleClass('selected');
-
-
-				var _ind = parseInt(_tmp_invitations.indexOf(_tmp_id));
-				if(_ind != -1) {
-					_tmp_invitations.splice(_ind, 1);
-				} else {
-					_tmp_invitations.push(_tmp_id);
-				}
-			});
-
-			$('#back').click(function(){
-				var _invitations = [];
-				var _invitations_emails = [];
-
-				for(var i=0; i < _tmp_invitations.length; i++){
-					_invitations.push(emails[_tmp_invitations[i]]);
-					console.log(_invitations);
-				}
-				$.each(_invitations, function(ind,val){
-					_invitations_emails.push(val.email);
-					console.log(val.email);
-				});
-				sessionStorage.invitations = JSON.stringify(_invitations_emails);
-
-				$('#contact').hide();
-				$('#create_room').show();
-
-				event.preventDefault();
-			});
-
-			// LOGIN
-			$('#form_login').submit(function () {
-	            var d = $(this).serializeObject();
-	            d.email = user_email;
-	            console.log(d);
-	            socket.io.nickname = $(this).serializeObject().name;
-	            socket.emit('join', d);
-
-	            event.preventDefault();
-	        });
-
-	        // CHAT
-	        $('#valid_msg').on('click', function(){
-				send();
-			});
-
-		});
-
-		socket.on('created', function (d) {
-			console.log(d);
+		if(user_email !== 0){
 			$('#create_room').hide();
-			//$('#login').hide();
-			$('#chat').show();
-		});
-
-		socket.on('joined', function (d) {
-	        console.log(d);
-	        if(d.success) {
-	        	$('#login').hide();
-	        	$('#chat').show();
-	        }
-	    });
-
-		socket.on('unveil', function (d) {
-	        console.log(d);
-
-	        $('#unveil').show().append(d.message);
-	    });
-
-	    // CHAT
-	    function send(){
-			var _v = $('#user_msg').val();
-			socket.emit('send', _v);
-			console.log(socket);
-
-			// clear input
-			$('#user_msg').val('');
+			$('#chat').hide();
+			$('#contact').hide();
+			$('#unveil').hide();
+		} else {
+			$('#login').hide();
+			$('#chat').hide();
+			$('#contact').hide();
+			$('#unveil').hide();
 		}
 
-		document.addEventListener('keyup', function(e){
-			if(e.keyCode === 13) send();
+		// CREATE ROOM
+		$('#select_friends').click(function(){
+			$('#create_room').hide();
+			$('#contact').show();
 		});
 
-		socket.on('receive', function(msg){
-			$('#conversation').prepend('<li><strong>'+socket.nickname+'</strong><br>'+msg+'</li>');
+		$('#form_create').submit(function () {
+			event.preventDefault();
+			var d = $(this).serializeObject();
+				d.attendees = JSON.parse(sessionStorage.invitations);
+				d.url = window.location.protocol +'//'+ window.location.hostname +(':'+ window.location.port || '') ;
+			socket.emit('create', d);
+			socket.emit('post', d);
+
+            sessionStorage.userEmail = d.name;
 		});
 
-		$.fn.serializeObject = function(){
-			var o = {};
-			var a = this.serializeArray();
-			$.each(a, function() {
-				if (o[this.name] !== undefined) {
-					if (!o[this.name].push) {
-						o[this.name] = [o[this.name]];
-					}
-					o[this.name].push(this.value || '');
-				} else {
-					o[this.name] = this.value || '';
-				}
+		// CONTACT
+		var _tmp_invitations = [];
+
+		$('li').click(function(){
+			// Get index of each item
+			var _tmp_id = parseInt($(this).attr('data-index'));
+			// Add class selected
+			$(this).toggleClass('selected');
+
+
+			var _ind = parseInt(_tmp_invitations.indexOf(_tmp_id));
+			if(_ind != -1) {
+				_tmp_invitations.splice(_ind, 1);
+			} else {
+				_tmp_invitations.push(_tmp_id);
+			}
+		});
+
+		$('#back').click(function(){
+			var _invitations = [];
+			var _invitations_emails = [];
+
+			for(var i=0; i < _tmp_invitations.length; i++){
+				_invitations.push(emails[_tmp_invitations[i]]);
+				console.log(_invitations);
+			}
+			$.each(_invitations, function(ind,val){
+				_invitations_emails.push(val.email);
+				console.log(val.email);
 			});
-			return o;
-		};
-	</script>
 
+			sessionStorage.invitations = JSON.stringify(_invitations_emails);
+
+			$('#contact').hide();
+			$('#create_room').show();
+
+			event.preventDefault();
+		});
+
+		// LOGIN
+		
+		$('#form_login').submit(function () {
+            var d = $(this).serializeObject();
+            d.email = user_email;
+
+            sessionStorage.userEmail = d.name;
+
+            socket.emit('join', d);
+
+            event.preventDefault();
+        });
+
+        // CHAT
+        $('#valid_msg').on('click', function(){
+			send();
+		});
+
+	});
+
+	socket.on('created', function (d) {
+		console.log(d);
+		$('#create_room').hide();
+		//$('#login').hide();
+		$('#chat').show();
+	});
+
+	socket.on('joined', function (d) {
+        console.log(d);
+        if(d.success) {
+        	$('#login').hide();
+        	$('#chat').show();
+        }
+    });
+
+	socket.on('unveil', function (d) {
+        console.log(d);
+
+        $('#unveil').show().append(d.message);
+    });
+
+    // CHAT
+    function send(){
+		var _m = {};
+		_m.msg = $('#user_msg').val();
+		_m.author = sessionStorage.userEmail;
+		socket.emit('send', _m);
+
+		// clear input
+		$('#user_msg').val('');
+	}
+
+	document.addEventListener('keyup', function(e){
+		if(e.keyCode === 13) send();
+	});
+
+	socket.on('receive', function(msg){
+		$('#conversation').prepend('<li><strong>'+msg.author+'</strong><br>'+msg.msg+'</li>');
+	});
+
+	$.fn.serializeObject = function(){
+		var o = {};
+		var a = this.serializeArray();
+		$.each(a, function() {
+			if (o[this.name] !== undefined) {
+				if (!o[this.name].push) {
+					o[this.name] = [o[this.name]];
+				}
+				o[this.name].push(this.value || '');
+			} else {
+				o[this.name] = this.value || '';
+			}
+		});
+		return o;
+	};
+</script>
 </body>
 </html>
