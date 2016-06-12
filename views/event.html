@@ -42,6 +42,10 @@
 
 
 	<section id="chat">
+
+		<h1>Invités manquants</h1>
+		<ul id="missing_users">
+		</ul>
 		<h1>Chat</h1>
 
 		<input id="user_msg" type="text" placeholder="Write something">
@@ -58,11 +62,6 @@
 	var emails = !sessionStorage.emails ? null : JSON.parse(sessionStorage.emails) ;
 	var url = window.location.search;
 	var user_email = url.substring(url.lastIndexOf('=')+1) || 0;
-
-	// Create list of contact
-	$.each(emails, function(ind, val){
-		$('#contact_list').append('<li data-index='+ind+'><p>'+val.title+'<br>'+val.email+'</p></li>');
-	});
 
 	$(function () {
 
@@ -96,6 +95,12 @@
 		});
 
 		// CONTACT
+
+		// DISPLAY THE LIST OF CONTACT
+		$.each(emails, function(ind, val){
+			$('#contact_list').append('<li data-index='+ind+'><p>'+val.title+'<br>'+val.email+'</p></li>');
+		});
+
 		var _tmp_invitations = [];
 
 		$('li').click(function(){
@@ -113,6 +118,7 @@
 			}
 		});
 
+		// BACK TO THE ROOM CREATION
 		$('#back').click(function(){
 			var _invitations = [];
 			var _invitations_emails = [];
@@ -134,8 +140,7 @@
 			event.preventDefault();
 		});
 
-		// LOGIN
-		
+		// LOGIN FOR USER WITH URL EMAIL PARAM
 		$('#form_login').submit(function () {
             var d = $(this).serializeObject();
             d.email = user_email;
@@ -152,63 +157,81 @@
 			send();
 		});
 
-	});
 
-	socket.on('created', function (d) {
-		console.log(d);
-		$('#create_room').hide();
-		//$('#login').hide();
-		$('#chat').show();
-	});
+		socket.on('created', function (d) {
+			console.log(d);
 
-	socket.on('joined', function (d) {
-        console.log(d);
-        if(d.success) {
-        	$('#login').hide();
-        	$('#chat').show();
-        }
-    });
+	        var _attendees = d.attendees;
+	        for(var i=0; i<=_attendees.length-1; i++){
+	        	$('#missing_users').append('<li>'+_attendees[i]+'</li>');
+	        }
 
-	socket.on('unveil', function (d) {
-        console.log(d);
-
-        $('#unveil').show().append(d.message);
-    });
-
-    // CHAT
-    function send(){
-		var _m = {};
-		_m.msg = $('#user_msg').val();
-		_m.author = sessionStorage.userEmail;
-		socket.emit('send', _m);
-
-		// clear input
-		$('#user_msg').val('');
-	}
-
-	document.addEventListener('keyup', function(e){
-		if(e.keyCode === 13) send();
-	});
-
-	socket.on('receive', function(msg){
-		$('#conversation').prepend('<li><strong>'+msg.author+'</strong><br>'+msg.msg+'</li>');
-	});
-
-	$.fn.serializeObject = function(){
-		var o = {};
-		var a = this.serializeArray();
-		$.each(a, function() {
-			if (o[this.name] !== undefined) {
-				if (!o[this.name].push) {
-					o[this.name] = [o[this.name]];
-				}
-				o[this.name].push(this.value || '');
-			} else {
-				o[this.name] = this.value || '';
-			}
+			$('#create_room').hide();
+			//$('#login').hide();
+			$('#chat').show();
 		});
-		return o;
-	};
+
+		socket.on('joined', function (d) {
+
+	        if(d.success) {
+	        	$('#login').hide();
+	        	$('#chat').show();
+	        }
+	    });
+
+		// CHECK ATTENDEES NUMBER
+		socket.on('added', function (d) {
+	        console.log(d);
+			$('#missing_users').empty();
+
+	        for(var i = 0; i <= d.length-1; i++){
+	        	$('#missing_users').append('<li>'+d[i]+'</li>');
+	        }
+	    });
+
+		// UNVEIL
+		socket.on('unveil', function (d) {
+	        console.log(d);
+	        $('#unveil').show().append(d.message);
+	    });
+
+	    // CHAT
+	    function send(){
+			var _m = {};
+			_m.msg = $('#user_msg').val();
+			_m.author = sessionStorage.userEmail;
+			socket.emit('send', _m);
+
+			// clear input
+			$('#user_msg').val('');
+		}
+
+		document.addEventListener('keyup', function(e){
+			if(e.keyCode === 13) send();
+		});
+
+		socket.on('receive', function(msg){
+			$('#conversation').prepend('<li><strong>'+msg.author+'</strong><br>'+msg.msg+'</li>');
+		});
+
+		$.fn.serializeObject = function(){
+			var o = {};
+			var a = this.serializeArray();
+			$.each(a, function() {
+				if (o[this.name] !== undefined) {
+					if (!o[this.name].push) {
+						o[this.name] = [o[this.name]];
+					}
+					o[this.name].push(this.value || '');
+				} else {
+					o[this.name] = this.value || '';
+				}
+			});
+			return o;
+		};
+
+	});
+
 </script>
 </body>
 </html>
