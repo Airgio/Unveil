@@ -231,6 +231,19 @@ ____________________________________*/
 #authorize-button {
     margin:30px auto;
 }
+.animated-search-filter{
+    width: 80%;
+    padding: 10px;
+    background: rgba(0,0,0,0.3);
+    border: none;
+    border-bottom: 1px solid transparent;
+    color: white;
+    margin: 10px auto;
+    display: block;
+    outline: none;
+    transition:all ease-out 0.2s;
+    border-radius: 3px;
+}
 #contact_list {
     height:42vh;
     min-height: 250px;
@@ -240,6 +253,7 @@ ____________________________________*/
     width: 85%;
     padding: 0;
     margin: 10px auto;
+    position: relative;
 }
 
 #contact_list li {
@@ -248,6 +262,7 @@ ____________________________________*/
     transition:all ease-in 0.2s;
     border-bottom: 1px solid rgba(0, 224, 188, 0.1);
     border-left:2px solid transparent;
+    width: 100%;
 }
 
 
