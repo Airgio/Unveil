@@ -39,8 +39,12 @@ module.exports = function(app){
             //     app.socket.io.to(room.owner).emit('unveil', room);
             //     app.room.rooms.splice(app.room.rooms.indexOf(room),1);
             // }
+            var newAttendee = {
+                attendees : room.attendees,
+                myself : data.email
+            };
  
-            app.socket.io.to(room.owner).emit('added', room.attendees);
+            app.socket.io.to(room.owner).emit('added', newAttendee);
 
             if(room.attendees.length === 0){
                 app.socket.io.to(room.owner).emit('unveil', room);

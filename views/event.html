@@ -11,6 +11,12 @@
 		.selected {
 			color: tomato;
 		}
+		#usersOffline {
+			color: tomato;
+		}
+		#usersOnline {
+			color: SpringGreen;
+		}
 	</style>
 </head>
 <body>
@@ -43,8 +49,10 @@
 
 	<section id="chat">
 
-		<h1>Invités manquants</h1>
-		<ul id="missing_users">
+		<h1>Who's missing ?</h1>
+		<ul id="usersOffline">
+		</ul>
+		<ul id="usersOnline">
 		</ul>
 		<h1>Chat</h1>
 
@@ -163,7 +171,7 @@
 
 	        var _attendees = d.attendees;
 	        for(var i=0; i<=_attendees.length-1; i++){
-	        	$('#missing_users').append('<li>'+_attendees[i]+'</li>');
+	        	$('#usersOffline').append('<li>'+_attendees[i]+'</li>');
 	        }
 
 			$('#create_room').hide();
@@ -182,11 +190,12 @@
 		// CHECK ATTENDEES NUMBER
 		socket.on('added', function (d) {
 	        console.log(d);
-			$('#missing_users').empty();
+			$('#usersOffline').empty();
 
-	        for(var i = 0; i <= d.length-1; i++){
-	        	$('#missing_users').append('<li>'+d[i]+'</li>');
+	        for(var i = 0; i <= d.attendees.length-1; i++){
+	        	$('#usersOffline').append('<li>'+d.attendees[i]+'</li>');
 	        }
+        	$('#usersOnline').prepend('<li>'+d.myself+'</li>');
 	    });
 
 		// UNVEIL
