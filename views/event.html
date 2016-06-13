@@ -1,20 +1,23 @@
 <!doctype html>
 <html>
 <head>
-
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-
+	<title>Unveil | Event</title>
 	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-	<script src="https://use.typekit.net/dpg5yxz.js"></script>
-	<script>try{Typekit.load({ async: true });}catch(e){}</script>
-
-	<link rel="stylesheet" href="/assets/css/style.css">
-	<link rel="stylesheet" href="/assets/css/normalize.css">
-
-	<title>Unveil | faites lever le voile sur vos secrets</title>
-
+	<style>
+		li {
+			cursor: pointer;
+		}
+		.selected {
+			color: tomato;
+		}
+		#usersOffline {
+			color: tomato;
+		}
+		#usersOnline {
+			color: SpringGreen;
+		}
+	</style>
 </head>
 <body>
 	<section id="create_room">
@@ -45,6 +48,12 @@
 
 
 	<section id="chat">
+
+		<h1>Who's missing ?</h1>
+		<ul id="usersOffline">
+		</ul>
+		<ul id="usersOnline">
+		</ul>
 		<h1>Chat</h1>
 
 		<input id="user_msg" type="text" placeholder="Write something">
@@ -56,131 +65,151 @@
 	<section id="unveil">Révélation : </section>
 
 
-	<script>
+<script>
+	var socket = io();
+	var emails = !sessionStorage.emails ? null : JSON.parse(sessionStorage.emails) ;
+	var url = window.location.search;
+	var user_email = url.substring(url.lastIndexOf('=')+1) || 0;
 
+	$(function () {
 
-		var socket = io();
-		var emails = !sessionStorage.emails ? null : JSON.parse(sessionStorage.emails) ;
-		var url = window.location.search;
-		var user_email = url.substring(url.lastIndexOf('=')+1) || 0;
+		if(user_email !== 0){
+			$('#create_room').hide();
+			$('#chat').hide();
+			$('#contact').hide();
+			$('#unveil').hide();
+		} else {
+			$('#login').hide();
+			$('#chat').hide();
+			$('#contact').hide();
+			$('#unveil').hide();
+		}
 
-		// Create list of contact
+		// CREATE ROOM
+		$('#select_friends').click(function(){
+			$('#create_room').hide();
+			$('#contact').show();
+		});
+
+		$('#form_create').submit(function () {
+			event.preventDefault();
+			var d = $(this).serializeObject();
+				d.attendees = JSON.parse(sessionStorage.invitations);
+				d.url = window.location.protocol +'//'+ window.location.hostname +(':'+ window.location.port || '') ;
+			socket.emit('create', d);
+			socket.emit('post', d);
+
+            sessionStorage.userEmail = d.name;
+		});
+
+		// CONTACT
+
+		// DISPLAY THE LIST OF CONTACT
 		$.each(emails, function(ind, val){
 			$('#contact_list').append('<li data-index='+ind+'><p>'+val.title+'<br>'+val.email+'</p></li>');
 		});
 
-		$(function () {
+		var _tmp_invitations = [];
 
-			if(user_email !== 0){
-				$('#create_room').hide();
-				$('#chat').hide();
-				$('#contact').hide();
-				$('#unveil').hide();
+		$('li').click(function(){
+			// Get index of each item
+			var _tmp_id = parseInt($(this).attr('data-index'));
+			// Add class selected
+			$(this).toggleClass('selected');
+
+
+			var _ind = parseInt(_tmp_invitations.indexOf(_tmp_id));
+			if(_ind != -1) {
+				_tmp_invitations.splice(_ind, 1);
 			} else {
-				$('#login').hide();
-				$('#chat').hide();
-				$('#contact').hide();
-				$('#unveil').hide();
+				_tmp_invitations.push(_tmp_id);
 			}
-
-			// CREATE ROOM
-			$('#select_friends').click(function(){
-				$('#create_room').hide();
-				$('#contact').show();
-			});
-
-			$('#form_create').submit(function () {
-				event.preventDefault();
-				var d = $(this).serializeObject();
-					d.attendees = JSON.parse(sessionStorage.invitations);
-					d.url = window.location.protocol +'//'+ window.location.hostname +(':'+ window.location.port || '') ;
-				socket.emit('create', d);
-				socket.emit('post', d);
-				socket.io.nickname = d.name;
-			});
-
-			// CONTACT
-			var _tmp_invitations = [];
-
-			$('li').click(function(){
-				// Get index of each item
-				var _tmp_id = parseInt($(this).attr('data-index'));
-				// Add class selected
-				$(this).toggleClass('selected');
-
-
-				var _ind = parseInt(_tmp_invitations.indexOf(_tmp_id));
-				if(_ind != -1) {
-					_tmp_invitations.splice(_ind, 1);
-				} else {
-					_tmp_invitations.push(_tmp_id);
-				}
-			});
-
-			$('#back').click(function(){
-				var _invitations = [];
-				var _invitations_emails = [];
-
-				for(var i=0; i < _tmp_invitations.length; i++){
-					_invitations.push(emails[_tmp_invitations[i]]);
-					console.log(_invitations);
-				}
-				$.each(_invitations, function(ind,val){
-					_invitations_emails.push(val.email);
-					console.log(val.email);
-				});
-				sessionStorage.invitations = JSON.stringify(_invitations_emails);
-
-				$('#contact').hide();
-				$('#create_room').show();
-
-				event.preventDefault();
-			});
-
-			// LOGIN
-			$('#form_login').submit(function () {
-	            var d = $(this).serializeObject();
-	            d.email = user_email;
-	            console.log(d);
-	            socket.io.nickname = $(this).serializeObject().name;
-	            socket.emit('join', d);
-
-	            event.preventDefault();
-	        });
-
-	        // CHAT
-	        $('#valid_msg').on('click', function(){
-				send();
-			});
-
 		});
+
+		// BACK TO THE ROOM CREATION
+		$('#back').click(function(){
+			var _invitations = [];
+			var _invitations_emails = [];
+
+			for(var i=0; i < _tmp_invitations.length; i++){
+				_invitations.push(emails[_tmp_invitations[i]]);
+				console.log(_invitations);
+			}
+			$.each(_invitations, function(ind,val){
+				_invitations_emails.push(val.email);
+				console.log(val.email);
+			});
+
+			sessionStorage.invitations = JSON.stringify(_invitations_emails);
+
+			$('#contact').hide();
+			$('#create_room').show();
+
+			event.preventDefault();
+		});
+
+		// LOGIN FOR USER WITH URL EMAIL PARAM
+		$('#form_login').submit(function () {
+            var d = $(this).serializeObject();
+            d.email = user_email;
+
+            sessionStorage.userEmail = d.name;
+
+            socket.emit('join', d);
+
+            event.preventDefault();
+        });
+
+        // CHAT
+        $('#valid_msg').on('click', function(){
+			send();
+		});
+
 
 		socket.on('created', function (d) {
 			console.log(d);
+
+	        var _attendees = d.attendees;
+	        for(var i=0; i<=_attendees.length-1; i++){
+	        	$('#usersOffline').append('<li>'+_attendees[i]+'</li>');
+	        }
+
 			$('#create_room').hide();
 			//$('#login').hide();
 			$('#chat').show();
 		});
 
 		socket.on('joined', function (d) {
-	        console.log(d);
+
 	        if(d.success) {
 	        	$('#login').hide();
 	        	$('#chat').show();
 	        }
 	    });
 
+		// CHECK ATTENDEES NUMBER
+		socket.on('added', function (d) {
+	        console.log(d);
+			$('#usersOffline').empty();
+
+	        for(var i = 0; i <= d.attendees.length-1; i++){
+	        	$('#usersOffline').append('<li>'+d.attendees[i]+'</li>');
+	        }
+        	$('#usersOnline').prepend('<li>'+d.myself+'</li>');
+	    });
+
+		// UNVEIL
 		socket.on('unveil', function (d) {
 	        console.log(d);
-
 	        $('#unveil').show().append(d.message);
 	    });
 
 	    // CHAT
 	    function send(){
-			var _v = $('#user_msg').val();
-			socket.emit('send', _v);
-			console.log(socket);
+			var _m = {};
+			_m.msg = $('#user_msg').val();
+			_m.author = sessionStorage.userEmail;
+			socket.emit('send', _m);
 
 			// clear input
 			$('#user_msg').val('');
@@ -191,7 +220,7 @@
 		});
 
 		socket.on('receive', function(msg){
-			$('#conversation').prepend('<li><strong>'+socket.nickname+'</strong><br>'+msg+'</li>');
+			$('#conversation').prepend('<li><strong>'+msg.author+'</strong><br>'+msg.msg+'</li>');
 		});
 
 		$.fn.serializeObject = function(){
@@ -209,7 +238,9 @@
 			});
 			return o;
 		};
-	</script>
 
+	});
+
+</script>
 </body>
 </html>

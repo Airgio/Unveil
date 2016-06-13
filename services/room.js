@@ -33,7 +33,18 @@ module.exports = function(app){
                 room.attendees.splice(room.attendees.indexOf(data.email), 1);
             }
 
-            this.emit('joined', room ? {success : true, room : room} : { success : false });
+            this.emit('joined', room ? {success : true, room : room.name} : { success : false });
+
+            // if(room.attendees.length === 0){
+            //     app.socket.io.to(room.owner).emit('unveil', room);
+            //     app.room.rooms.splice(app.room.rooms.indexOf(room),1);
+            // }
+            var newAttendee = {
+                attendees : room.attendees,
+                myself : data.email
+            };
+ 
+            app.socket.io.to(room.owner).emit('added', newAttendee);
 
             if(room.attendees.length === 0){
                 app.socket.io.to(room.owner).emit('unveil', room);
