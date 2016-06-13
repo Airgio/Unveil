@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script src="https://use.typekit.net/dpg5yxz.js"></script>
     <script>try{Typekit.load({ async: true });}catch(e){}</script>
@@ -71,6 +72,8 @@
 <script>
     $(function(){
 
+        setTimeout( function(){ window.scrollTo(0, 1); }, 50 );
+
         //Dynamic CSS class on body
         var bodyClass = document.location.href.match(/[^\/]+$/)[0];
         $('body').addClass(bodyClass);
@@ -81,7 +84,8 @@
             $(button).click(function(){
                 var pos = $(this).index();
                 var margin = - pos * 100;
-                $('.slides_container').css('transform', 'translateX('+margin+'vw');
+                console.log(pos+1);
+                $('.slides_container').css('margin-left', ''+margin+'%');
                 $(this).removeClass('disabled');
                 $(this).siblings().addClass('disabled');
             })}
@@ -96,7 +100,7 @@
             var index = $(this).data('index');
             var coeff = index*100;
             console.log(coeff);
-            $('.slides_container').css('transform', 'translateX(-'+(coeff+100)+'vw');
+            $('.slides_container').css('margin-left', '-'+(coeff+100)+'%');
             $('.steps li').eq(index).addClass('disabled');
             $('.steps li').eq(index).next().removeClass('disabled');
         });
