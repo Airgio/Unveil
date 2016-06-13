@@ -245,8 +245,7 @@ ____________________________________*/
     border-radius: 3px;
 }
 #contact_list {
-    height:42vh;
-    min-height: 250px;
+    height:38vh;
     overflow-y: auto;
     overflow-x: hidden;
     background: rgba(0, 0, 0, 0.28);
