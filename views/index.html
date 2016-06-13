@@ -8,10 +8,10 @@
     <script>try{Typekit.load({ async: true });}catch(e){}</script>
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="/assets/css/normalize.css">
-    <link rel="stylesheet" href="/assets/js/script.js">
     <title>Unveil | faites lever le voile sur vos secrets</title>
 </head>
-<body>
+
+<body class="index">
 
     <main>
 
@@ -40,17 +40,15 @@
     <script>
         $(function(){
 
-            viewHelperContent('.closer');
-            viewHelperContent('.helper');
-
-
-            function viewHelperContent(button){
+            function showHelp(button){
                 $(button).click(function(){
                     $('.helper_content').toggleClass('visible');
                     $('main').toggleClass('downscaled');
                 })}
             ;
 
+            showHelp('.closer');
+            showHelp('.helper');
 
         })
     </script>

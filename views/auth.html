@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script src="https://use.typekit.net/dpg5yxz.js"></script>
     <script>try{Typekit.load({ async: true });}catch(e){}</script>
     <link rel="stylesheet" href="/assets/css/style.css">
@@ -10,31 +11,55 @@
     <title>Unveil | faites lever le voile sur vos secrets</title>
 </head>
 <body>
+
+<img src="/assets/img/logo.svg" class="logo" alt="Unveil, faites lever le voile sur vos secrets">
 <!-- Oauth -->
-<main>
+<main id="create_room">
     <ul class="steps">
-        <li>connectez-vous</li>
-        <li class="disabled">paramétrez-votre secret</li>
-        <li class="disabled">invitez vos proches</li>
+        <li>Connectez-vous</li>
+        <li class="disabled">Créez votre secret</li>
+        <li class="disabled">Invitez vos proches</li>
     </ul>
 
     <div class="slide_viewport">
+
         <div class="slides_container">
 
             <section id="google_connect" class="slide">
                 <p>Connectez-vous avec votre compte gmail pour accéder à vos contacts.</p>
                 <button id="authorize-button" style="visibility: hidden" class="btn">Identifiez vous via Google</button>
+                <div class="step_success connected">
+                    <p>Vous êtes maintenant connecté</p>
+                    <a class="btn btn_alter next_step" data-index="0">étape suivante (2/3)</a>
+                </div>
             </section>
 
             <section id="message_create" class="slide">
-                <p>slide 2</p>
+                <p>Quel secret voulez-vous réveler ?</p>
+
+                <form id="form_create">
+                    <input type="email" placeholder="votre mail" required name="owner">
+                    <input type="text" placeholder="votre nom" name="name" required>
+                    <input type="text" placeholder="votre message" name="message" required>
+
+                    <div class="step_success secreted">
+                        <p>Votre secret est prêt</p>
+                        <a id="select_friends" class="btn btn_alter next_step" data-index="1">Étape suivante (3/3)</a>
+                    </div>
+                </form>
+
             </section>
 
             <section id="user_invite" class="slide">
-                <p>Slide 3</p>
+                <p>Choisissez les personnes à qui vous voulez diffuser votre secret :</p>
+
+                <ul id="contact_list"></ul>
             </section>
 
         </div>
+
+        <a class="btn" id="launch_room">Envoyez votre secret</a>
+
     </div>
 </main>
 
@@ -44,11 +69,99 @@
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 <script>
+    $(function(){
+
+        //Dynamic CSS class on body
+        var bodyClass = document.location.href.match(/[^\/]+$/)[0];
+        $('body').addClass(bodyClass);
+
+
+        function slideToNextStep(button){
+            $(button).click(function(){
+                var pos = $(this).index();
+                var margin = - pos * 100;
+                $('.slides_container').css('transform', 'translateX('+margin+'vw');
+                $(this).removeClass('disabled');
+                $(this).siblings().addClass('disabled');
+            })}
+        ;
+
+        slideToNextStep(".steps li");
+        slideToNextStep(".next_step");
+
+
+        //Steps navigation & states
+        $('.next_step').click(function(){
+            var index = $(this).data('index');
+            var coeff = index*100;
+            console.log(coeff);
+            $('.slides_container').css('transform', 'translateX(-'+(coeff+100)+'vw');
+            $('.steps li').eq(index).addClass('disabled');
+            $('.steps li').eq(index).next().removeClass('disabled');
+        });
+
+
+        // Contact management
+        var _tmp_invitations = [];
+
+        $('#contact_list li').click(function(){
+            // Get index of each item
+            var _tmp_id = parseInt($(this).attr('data-index'));
+            // Add class selected
+            $(this).toggleClass('selected');
+
+            var _ind = parseInt(_tmp_invitations.indexOf(_tmp_id));
+            if(_ind != -1) {
+                _tmp_invitations.splice(_ind, 1);
+                $('.steps li:nth-child(3)').removeClass('done');
+            } else {
+                _tmp_invitations.push(_tmp_id);
+                $('.steps li:nth-child(3)').addClass('done');
+            }
+
+        });
+
+
+        //Room creation button appearance
+
+        var doneSteps
+        if (($('.steps li').length) == ($('.steps .done').length))
+        {
+            $('#launch_room').fadeIn('fast');
+        } else {
+            $('#launch_room').fadeOut('fast');
+        }
+        //Form next step CTA appearing
+        var $fields = $("form input");
+
+        $fields.keyup(function() {
+
+            var $emptyFields = $fields.filter(function() {
+                // remove the $.trim if whitespace is counted as filled
+                return $.trim(this.value) === "";
+            });
+            if (!$emptyFields.length) {
+               $('.secreted').fadeIn(100);
+                $('.steps li:nth-child(2)').addClass('done');
+            } else {
+                $('.secreted').fadeOut(100);
+                $('.steps li:nth-child(2)').removeClass('done');
+            }
+        });
+    });
+
+
+    var emails = !sessionStorage.emails ? null : JSON.parse(sessionStorage.emails) ;
     var clientId = '605751688227-u0fliiq32028oh6uim9mguae8hqfb7jj.apps.googleusercontent.com';
     var apiKey = 'AIzaSyAOpIxefwOLJi7luSaFxNNSjNn7EjJWru0';
     var scopes = 'https://www.googleapis.com/auth/contacts.readonly';
     var socket = io();
-    
+
+    // Create list of contact
+    $.each(emails, function(ind, val){
+        $('#contact_list').append('<li data-index='+ind+'><p>'+val.title+' <span class="user_mail">'+val.email+'</span></p></li>');
+    });
+
     function handleClientLoad() {
         gapi.client.setApiKey(apiKey);
         window.setTimeout(checkAuth,1);
@@ -61,7 +174,7 @@
         if (authResult && !authResult.error) {
 
             authorizeButton.style.visibility = 'hidden';
-            console.log(authResult);
+            //console.log(authResult);
 
             getContacts(authResult.access_token);
 
@@ -91,7 +204,8 @@
                         _tmp.push({
                             title : val['title'].$t,
                             email : val['gd$email'][0].address
-                        })
+                        });
+
 
                         /*$('ul').append('<li><p>'+val['title'].$t+'<br>'+val['gd$email'][0].address+'</p></li>');*/
                     }
@@ -99,7 +213,8 @@
                     if(ind === data.feed.entry.length-1){
                         sessionStorage.setItem('emails', JSON.stringify(_tmp));
                         $('.steps li:first-child').addClass('done');
-                        //swindow.location = '/event';
+                        $('.connected').fadeIn(100);
+                        //window.location = '/login';
                     }
                 });
         });
