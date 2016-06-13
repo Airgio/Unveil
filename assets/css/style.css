@@ -234,19 +234,20 @@ ____________________________________*/
     width: 85%;
     padding: 0;
     margin: 10px auto;
-    padding-left: 5%;
 }
 
 #contact_list li {
     list-style: none;
-    padding:15px 0;
+    padding: 15px 10px;
     transition:all ease-in 0.2s;
     border-bottom: 1px solid rgba(0, 224, 188, 0.1);
+    border-left:2px solid transparent;
 }
 
 
 #contact_list li.selected {
     color: #04e1af;
+    border-left-color: #04e1af;
 }
 
 #contact_list p {

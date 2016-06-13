@@ -76,6 +76,7 @@
         $('body').addClass(bodyClass);
 
 
+        //Steps navigation & states
         function slideToNextStep(button){
             $(button).click(function(){
                 var pos = $(this).index();
@@ -113,10 +114,14 @@
             var _ind = parseInt(_tmp_invitations.indexOf(_tmp_id));
             if(_ind != -1) {
                 _tmp_invitations.splice(_ind, 1);
+                if(_ind == 0){
                 $('.steps li:nth-child(3)').removeClass('done');
+                $(document).trigger('elDone');
+                }
             } else {
                 _tmp_invitations.push(_tmp_id);
                 $('.steps li:nth-child(3)').addClass('done');
+                $(document).trigger('elDone');
             }
 
         });
@@ -124,13 +129,16 @@
 
         //Room creation button appearance
 
-        var doneSteps
-        if (($('.steps li').length) == ($('.steps .done').length))
-        {
-            $('#launch_room').fadeIn('fast');
-        } else {
-            $('#launch_room').fadeOut('fast');
-        }
+
+        $(document).on('elDone', function() {
+            if (($('.steps li').length) === ($('.steps .done').length))
+            {
+                $('#launch_room').fadeIn('fast');
+            } else {
+                $('#launch_room').fadeOut('fast');
+            }
+        });
+
         //Form next step CTA appearing
         var $fields = $("form input");
 
@@ -143,9 +151,11 @@
             if (!$emptyFields.length) {
                $('.secreted').fadeIn(100);
                 $('.steps li:nth-child(2)').addClass('done');
+                $(document).trigger('elDone');
             } else {
                 $('.secreted').fadeOut(100);
                 $('.steps li:nth-child(2)').removeClass('done');
+                $(document).trigger('elDone');
             }
         });
     });
@@ -213,6 +223,7 @@
                     if(ind === data.feed.entry.length-1){
                         sessionStorage.setItem('emails', JSON.stringify(_tmp));
                         $('.steps li:first-child').addClass('done');
+                        $(document).trigger('elDone');
                         $('.connected').fadeIn(100);
                         //window.location = '/login';
                     }
