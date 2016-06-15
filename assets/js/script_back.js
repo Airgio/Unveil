@@ -6,9 +6,15 @@ var clientId = '605751688227-u0fliiq32028oh6uim9mguae8hqfb7jj.apps.googleusercon
 var apiKey = 'AIzaSyAOpIxefwOLJi7luSaFxNNSjNn7EjJWru0';
 var scopes = 'https://www.googleapis.com/auth/contacts.readonly';
 
+function display_contacts(){
+	// Create list of contact
+	$.each(emails, function(ind, val){
+	    $('#contact_list').append('<li data-index='+ind+'><p>'+val.title+' <span class="user_mail">'+val.email+'</span></p></li>');
+	});
+}
+
 function contact_management(){
 	display_contacts();	
-	//refresh_contacts();
 
 	var _tmp_invitations = [];
 
@@ -219,7 +225,6 @@ function getContacts(token){
                     email : val['gd$email'][0].address
                 });
 
-
                 /*$('ul').append('<li><p>'+val['title'].$t+'<br>'+val['gd$email'][0].address+'</p></li>');*/
             }
 
@@ -228,24 +233,9 @@ function getContacts(token){
                 $('.steps li:first-child').addClass('done');
                 $(document).trigger('elDone');
                 $('.connected').fadeIn(100);
-                //window.location = '/login';
-                //refresh_contacts();
             }
         });
     });
-}
-
-function display_contacts(){
-	// Create list of contact
-	$.each(emails, function(ind, val){
-	    $('#contact_list').append('<li data-index='+ind+'><p>'+val.title+' <span class="user_mail">'+val.email+'</span></p></li>');
-	});
-}
-function refresh_contacts(){
-	$.ajax({
-		url: '/login',
-		success: display_contacts()
-	});
 }
 
 // Initalize
