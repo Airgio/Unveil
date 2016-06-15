@@ -1,25 +1,22 @@
 var socket = io();
-var emails = !sessionStorage.emails ? null : JSON.parse(sessionStorage.emails) ;
+var emails = !sessionStorage.emails ? null : JSON.parse(sessionStorage.emails);
 var url = window.location.search;
 var user_email = url.substring(url.lastIndexOf('=')+1) || 0;
 var clientId = '605751688227-u0fliiq32028oh6uim9mguae8hqfb7jj.apps.googleusercontent.com';
 var apiKey = 'AIzaSyAOpIxefwOLJi7luSaFxNNSjNn7EjJWru0';
 var scopes = 'https://www.googleapis.com/auth/contacts.readonly';
 
-function display_contacts(){
-	// Create list of contact
-	$.each(emails, function(ind, val){
-	    $('#contact_list').append('<li data-index='+ind+'><p>'+val.title+' <span class="user_mail">'+val.email+'</span></p></li>');
-	});
-}
-
 function contact_management(){
 	display_contacts();	
+	//refresh_contacts();
 
 	var _tmp_invitations = [];
 
 	// Select contacts
     $('#contact_list li').click(function(){
+		var _invitations_emails = [];
+		var _invitations = [];
+
         // Get index of each item
         var _tmp_id = parseInt($(this).attr('data-index'));
         // Add class selected
@@ -37,26 +34,18 @@ function contact_management(){
             $('.steps li:nth-child(3)').addClass('done');
             $(document).trigger('elDone');
         }
-    });
 
-    // BACK TO THE ROOM CREATION
-	$('#back').click(function(){
-		var _invitations = [];
-		var _invitations_emails = [];
-
-		for(var i=0; i < _tmp_invitations.length; i++){
+        // Stock selected emails
+        for(var i=0; i < _tmp_invitations.length; i++){
 			_invitations.push(emails[_tmp_invitations[i]]);
-			console.log(_invitations);
 		}
 		$.each(_invitations, function(ind,val){
 			_invitations_emails.push(val.email);
-			console.log(val.email);
 		});
 
 		sessionStorage.invitations = JSON.stringify(_invitations_emails);
 
-		event.preventDefault();
-	});
+    });
 
 } // contact_managemnt
 
@@ -240,11 +229,24 @@ function getContacts(token){
                 $(document).trigger('elDone');
                 $('.connected').fadeIn(100);
                 //window.location = '/login';
+                //refresh_contacts();
             }
         });
     });
 }
 
+function display_contacts(){
+	// Create list of contact
+	$.each(emails, function(ind, val){
+	    $('#contact_list').append('<li data-index='+ind+'><p>'+val.title+' <span class="user_mail">'+val.email+'</span></p></li>');
+	});
+}
+function refresh_contacts(){
+	$.ajax({
+		url: '/login',
+		success: display_contacts()
+	});
+}
 
 // Initalize
 $(function(){
