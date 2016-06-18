@@ -197,11 +197,6 @@ function handleAuthResult(authResult) {
 
         getContacts(authResult.access_token);
 
-        if(!sessionStorage.getContacts){
-            window.location.reload();
-            sessionStorage.getContacts = true;
-        }
-
     } else {
         authorizeButton.style.visibility = '';
         authorizeButton.onclick = handleAuthClick;
@@ -248,6 +243,11 @@ function getContacts(token){
                   dataType: "script",
                   success: success
                 });*/
+            }
+            
+            if(!sessionStorage.getContacts){
+                sessionStorage.getContacts = true;
+                window.location.reload(true);
             }
         });
     });
