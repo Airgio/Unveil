@@ -197,6 +197,11 @@ function handleAuthResult(authResult) {
 
         getContacts(authResult.access_token);
 
+        if(!sessionStorage.getContacts){
+            window.location.reload();
+            sessionStorage.getContacts = true;
+        }
+
     } else {
         authorizeButton.style.visibility = '';
         authorizeButton.onclick = handleAuthClick;
@@ -233,6 +238,16 @@ function getContacts(token){
                 $('.steps li:first-child').addClass('done');
                 $(document).trigger('elDone');
                 $('.connected').fadeIn(100);
+
+                /*        // DISPLAY THE LIST OF CONTACT
+                $.each(_tmp, function(ind, val){
+                    $('#contact_list').append('<li data-index='+ind+'><p>'+val.title+'<br>'+val.email+'</p></li>');
+                });
+                $.ajax({
+                  url: 'assets/js/animated-search-filter.js',
+                  dataType: "script",
+                  success: success
+                });*/
             }
         });
     });
