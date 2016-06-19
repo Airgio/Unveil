@@ -143,7 +143,7 @@ function chat_management(){
 
 	// Keyboard 'enter' to valid msg
 	document.addEventListener('keyup', function(e){
-		if(e.keyCode === 13) send();
+		if(e.keyCode === 13 && $('#user_msg').val() != '') send();
 	});
 
 	// Display msg
