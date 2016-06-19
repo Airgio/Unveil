@@ -106,23 +106,29 @@
 
 		// DISPLAY THE LIST OF CONTACT
 		$.each(emails, function(ind, val){
-			$('#contact_list').append('<li data-index='+ind+'><p>'+val.title+'<br>'+val.email+'</p></li>');
+			$('#contact_list').append('<li data-index='+ind+'><p>'+val.title+' <span class="user_mail">'+val.email+'</span></p></li>');
 		});
 
+		// Contact management
 		var _tmp_invitations = [];
 
-		$('li').click(function(){
+		$('#contact_list li').click(function(){
 			// Get index of each item
 			var _tmp_id = parseInt($(this).attr('data-index'));
 			// Add class selected
 			$(this).toggleClass('selected');
 
-
 			var _ind = parseInt(_tmp_invitations.indexOf(_tmp_id));
 			if(_ind != -1) {
 				_tmp_invitations.splice(_ind, 1);
+				if(_tmp_invitations.length == 0){
+					$('.steps li:nth-child(3)').removeClass('done');
+					$(document).trigger('elDone');
+				}
 			} else {
 				_tmp_invitations.push(_tmp_id);
+				$('.steps li:nth-child(3)').addClass('done');
+				$(document).trigger('elDone');
 			}
 		});
 

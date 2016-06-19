@@ -1,0 +1,293 @@
+<!doctype html>
+<html>
+<head>
+
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+	<script src="https://use.typekit.net/dpg5yxz.js"></script>
+	<script>try{Typekit.load({ async: true });}catch(e){}</script>
+
+	<link rel="stylesheet" href="/assets/css/style.css">
+	<link rel="stylesheet" href="/assets/css/normalize.css">
+
+	<title>Unveil | faites lever le voile sur vos secrets</title>
+
+</head>
+<body>
+
+<img src="/assets/img/logo.svg" class="logo" alt="Unveil, faites lever le voile sur vos secrets">
+
+<main>
+
+	<section id="create_room">
+		<ul class="steps">
+			<li>Connectez-vous</li>
+			<li class="disabled">Créez votre secret</li>
+			<li class="disabled">Invitez vos proches</li>
+		</ul>
+
+		<div class="slide_viewport">
+
+			<div class="slides_container">
+
+				<section id="google_connect" class="slide">
+					<p>Connectez-vous avec votre compte gmail pour accéder à vos contacts.</p>
+					<button id="authorize-button" style="visibility: hidden" class="btn">Identifiez vous via Google</button>
+					<div class="step_success connected">
+						<p>Vous êtes maintenant connecté</p>
+						<a class="btn btn_alter next_step" data-index="0">étape suivante (2/3)</a>
+					</div>
+				</section>
+
+				<section id="message_create" class="slide">
+					<p>Quel secret voulez-vous réveler ?</p>
+
+					<form id="form_create">
+						<input type="email" placeholder="votre mail"  name="owner" required>
+						<input type="text" placeholder="votre nom" name="name" required>
+						<input type="text" placeholder="votre message" name="message" required>
+
+						<div class="step_success secreted">
+							<p>Votre secret est prêt</p>
+							<a id="select_friends" class="btn btn_alter next_step" data-index="1">Étape suivante (3/3)</a>
+						</div>
+					</form>
+
+				</section>
+
+				<section id="user_invite" class="slide">
+					<p>Choisissez les personnes à qui vous voulez diffuser votre secret :</p>
+
+					<ul id="contact_list"></ul>
+				</section>
+
+			</div>
+
+			<a class="btn" id="launch_room">Envoyez votre secret</a>
+
+		</div>
+	</section>
+
+	<section id="login">
+
+		<form id="form_login">
+			<input type="text" placeholder="votre pseudo" name="name" required>
+			<input type="submit" content="accèdez à unveil">
+		</form>
+
+	</section>
+
+	<section id="chat">
+
+		<h1>Chat</h1>
+
+		<input id="user_msg" type="text" placeholder="Write something">
+		<button id="valid_msg">Send</button>
+		<ul id="conversation"></ul>
+
+	</section>
+
+	<section id="unveil">Révélation : </section>
+
+</main>
+
+<!--<section id="create_rooms">
+    <h1>Event</h1>
+    <form id="form_creates">
+        <input type="email" placeholder="votre mail" required name="owner">
+        <input type="text" placeholder="votre nom" name="name" required>
+        <input type="text" placeholder="votre message" name="message" required>
+        <button type="button" id="select_friendss">sélectionner mes amis</button>
+        <input type="submit" value="accèdez à unveil">
+    </form>
+</section>
+
+
+
+<section id="chat">
+    <h1>Chat</h1>
+
+    <input id="user_msg" type="text" placeholder="Write something">
+    <button id="valid_msg">Send</button>
+    <ul id="conversation"></ul>
+</section>
+
+
+-->
+
+
+<script>
+
+	//Dynamic CSS class on body
+	var bodyClass = document.location.href.match(/[^\/]+$/)[0];
+	$('body').addClass(bodyClass);
+
+	function slideToNextStep(button){
+		$(button).click(function(){
+			var pos = $(this).index();
+			var margin = - pos * 100;
+			$('.slides_container').css('transform', 'translateX('+margin+'vw');
+			$(this).removeClass('disabled');
+			$(this).siblings().addClass('disabled');
+		})}
+	;
+
+	slideToNextStep(".steps li");
+	slideToNextStep(".next_step");
+	//Steps navigation & states
+
+	$('.next_step').click(function(){
+
+		//Soustrait 100 à la position originale du slider
+
+		var style = window.getComputedStyle($('.slides_container').get(0));  // Need the DOM object
+		var matrix = new WebKitCSSMatrix(style.webkitTransform);
+		var pos = matrix.m41;
+		console.log(matrix.m41);
+
+		var matrix = $('.slides_container').css('transform');
+		var values = matrix.match(/-?[\d\.]+/g);
+		$('.slides_container').css('transform', 'translateX('+pos*2+'px');
+	});
+
+	var socket = io();
+	var emails = !sessionStorage.emails ? null : JSON.parse(sessionStorage.emails) ;
+	var url = window.location.search;
+	var user_email = url.substring(url.lastIndexOf('=')+1) || 0;
+
+	// Create list of contact
+	$.each(emails, function(ind, val){
+		$('#contact_list').append('<li data-index='+ind+'><p>'+val.title+'<br>'+val.email+'</p></li>');
+	});
+
+	$(function () {
+
+		if(user_email !== 0){
+			$('#create_room').hide();
+			$('#chat').hide();
+			$('#unveil').hide();
+		} else {
+			$('#login').hide();
+			$('#chat').hide();
+			$('#contact').hide();
+			$('#unveil').hide();
+		}
+
+		// CREATE ROOM
+		$('#select_friends').click(function(){
+			$('#create_room').hide();
+			$('#contact').show();
+		});
+
+		$('#form_create').submit(function () {
+			event.preventDefault();
+			var d = $(this).serializeObject();
+			d.attendees = JSON.parse(sessionStorage.invitations);
+			d.url = window.location.protocol +'//'+ window.location.hostname +(':'+ window.location.port || '') ;
+			socket.emit('create', d);
+			socket.emit('post', d);
+			socket.io.nickname = d.name;
+		});
+
+		// CONTACT
+
+
+		$('#back').click(function(){
+			var _invitations = [];
+			var _invitations_emails = [];
+
+			for(var i=0; i < _tmp_invitations.length; i++){
+				_invitations.push(emails[_tmp_invitations[i]]);
+				console.log(_invitations);
+			}
+			$.each(_invitations, function(ind,val){
+				_invitations_emails.push(val.email);
+				console.log(val.email);
+			});
+			sessionStorage.invitations = JSON.stringify(_invitations_emails);
+
+			$('#contact').hide();
+			$('#create_room').show();
+
+			event.preventDefault();
+		});
+
+		// LOGIN
+		$('#form_login').submit(function () {
+			var d = $(this).serializeObject();
+			d.email = user_email;
+			console.log(d);
+			socket.io.nickname = $(this).serializeObject().name;
+			socket.emit('join', d);
+
+			event.preventDefault();
+		});
+
+		// CHAT
+		$('#valid_msg').on('click', function(){
+			send();
+		});
+
+	});
+
+	socket.on('created', function (d) {
+		console.log(d);
+		$('#create_room').hide();
+		//$('#login').hide();
+		$('#chat').show();
+	});
+
+	socket.on('joined', function (d) {
+		console.log(d);
+		if(d.success) {
+			$('#login').hide();
+			$('#chat').show();
+		}
+	});
+
+	socket.on('unveil', function (d) {
+		console.log(d);
+
+		$('#unveil').show().append(d.message);
+	});
+
+	// CHAT
+	function send(){
+		var _v = $('#user_msg').val();
+		socket.emit('send', _v);
+		console.log(socket);
+
+		// clear input
+		$('#user_msg').val('');
+	}
+
+	document.addEventListener('keyup', function(e){
+		if(e.keyCode === 13) send();
+	});
+
+	socket.on('receive', function(msg){
+		$('#conversation').prepend('<li><strong>'+socket.nickname+'</strong><br>'+msg+'</li>');
+	});
+
+	$.fn.serializeObject = function(){
+		var o = {};
+		var a = this.serializeArray();
+		$.each(a, function() {
+			if (o[this.name] !== undefined) {
+				if (!o[this.name].push) {
+					o[this.name] = [o[this.name]];
+				}
+				o[this.name].push(this.value || '');
+			} else {
+				o[this.name] = this.value || '';
+			}
+		});
+		return o;
+	};
+</script>
+
+</body>
+</html>

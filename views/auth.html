@@ -106,11 +106,6 @@
     var scopes = 'https://www.googleapis.com/auth/contacts.readonly';
     var socket = io();
 
-    // Create list of contact
-    $.each(emails, function(ind, val){
-        $('#contact_list').append('<li data-index='+ind+'><p>'+val.title+' <span class="user_mail">'+val.email+'</span></p></li>');
-    });
-
     function handleClientLoad() {
         gapi.client.setApiKey(apiKey);
         window.setTimeout(checkAuth,1);
