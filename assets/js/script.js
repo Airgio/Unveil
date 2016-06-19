@@ -47,7 +47,7 @@ $(function () {
 
     $('#launch_room').click(function(){
         $('#chat').show();
-        $('.slide_viewport').hide();
+        $('#create_room').hide();
     });
 
 
