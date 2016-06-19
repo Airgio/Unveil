@@ -291,3 +291,9 @@ ____________________________________*/
     left: -124px;
     display: none;
 }
+
+#chat_room {
+    width:100px;
+    height:100px;
+    background:red;
+}

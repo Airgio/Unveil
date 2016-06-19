@@ -1,7 +1,7 @@
 $(function () {
 
     //Dynamic CSS class on body
-
+    $('#chat_room').hide();
     var bodyClass = document.location.href.match(/[^\/]+$/)[0];
     $('body').addClass(bodyClass);
 
@@ -43,6 +43,11 @@ $(function () {
         } else {
             $('#launch_room').fadeOut('fast');
         }
+    });
+
+    $('#launch_room').click(function(){
+        $('#chat').show();
+        $('.slide_viewport').hide();
     });
 
 
