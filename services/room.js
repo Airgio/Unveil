@@ -39,18 +39,27 @@ module.exports = function(app){
             //     app.socket.io.to(room.owner).emit('unveil', room);
             //     app.room.rooms.splice(app.room.rooms.indexOf(room),1);
             // }
-            var newAttendee = {
+            var _newAttendee = {
                 attendees : room.attendees,
+                owner : room.owner,
                 myself : data.email
             };
  
-            app.socket.io.to(room.owner).emit('added', newAttendee);
+            app.socket.io.to(room.owner).emit('added', _newAttendee);
 
             if(room.attendees.length === 0){
                 app.socket.io.to(room.owner).emit('unveil', room);
                 app.room.rooms.splice(app.room.rooms.indexOf(room),1);
             }
 
+        },
+
+        disconnect: function(data){
+            console.log('data', data);
+
+            /*var room = app.room.rooms[data.owner];
+            room.attendees.push(data.myself);
+            app.socket.io.to(data.owner).emit('disconnected', data.myself);*/
         }
     }
 }
