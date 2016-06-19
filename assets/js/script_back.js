@@ -73,10 +73,14 @@ function create_room(){
 	socket.on('created', function (d) {
 		console.log(d);
 
-        var _attendees = d.attendees;
-        for(var i=0; i<=_attendees.length-1; i++){
-        	$('#usersOffline').append('<li>'+_attendees[i]+'</li>');
+
+	
+		$('#usersOffline').empty();
+
+        for(var i = 0; i <= d.attendees.length-1; i++){
+        	$('#usersOffline').append('<li>'+d.attendees[i]+'</li>');
         }
+    	$('#usersOffline').prepend('<li class="online">'+d.myself+'</li>');
 
 		$('.slide_viewport').hide();
 		$('#chat').show();
@@ -115,7 +119,7 @@ function show_connected_users(){
         for(var i = 0; i <= d.attendees.length-1; i++){
         	$('#usersOffline').append('<li>'+d.attendees[i]+'</li>');
         }
-    	$('#usersOnline').prepend('<li>'+d.myself+'</li>');
+    	$('#usersOffline').prepend('<li class="online">'+d.myself+'</li>');
     });
 }
 
