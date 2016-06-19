@@ -80,7 +80,6 @@ function create_room(){
         for(var i = 0; i <= d.attendees.length-1; i++){
         	$('#usersOffline').append('<li>'+d.attendees[i]+'</li>');
         }
-    	$('#usersOffline').prepend('<li class="online">'+d.myself+'</li>');
 
 		$('.slide_viewport').hide();
 		$('#chat').show();
