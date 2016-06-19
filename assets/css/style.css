@@ -292,7 +292,8 @@ ____________________________________*/
     display: none;
 }
 
-#chat_room {
+#chat {
+    display:none;
     width:100px;
     height:100px;
     background:red;
