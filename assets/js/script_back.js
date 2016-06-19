@@ -147,7 +147,7 @@ function chat_management(){
 
 	// Display msg
 	socket.on('receive', function(msg){
-		$('#conversation').prepend('<li><strong>'+msg.author+'</strong><br>'+msg.msg+'</li>');
+		$('#conversation').append('<li><strong>'+msg.author+'</strong><br>'+msg.msg+'</li>');
 	});
 } // chat_management
 
