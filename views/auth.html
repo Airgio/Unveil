@@ -14,7 +14,8 @@
 
 <img src="/assets/img/logo.svg" class="logo" alt="Unveil, faites lever le voile sur vos secrets">
 <!-- Oauth -->
-<main id="create_room">
+<main>
+    <section id="create_room">
     <ul class="steps">
         <li>Connectez-vous</li>
         <li class="disabled">Créez votre secret</li>
@@ -60,6 +61,7 @@
         <a class="btn" id="launch_room">Envoyez votre secret</a>
 
     </section>
+    </section>
 
     <section id="login">
         <form id="form_login">
@@ -76,10 +78,11 @@
             <ul id="usersOnline">
             </ul>
             <h1>Chat</h1>
-
-            <input id="user_msg" type="text" placeholder="Write something">
-            <button id="valid_msg">Send</button>
             <ul id="conversation"></ul>
+            <div class="sender_container">
+            <input id="user_msg" type="text" placeholder="dites quelque chose">
+                <button id="valid_msg">envoyer</button>
+            </div>
         </section>
 
 

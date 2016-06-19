@@ -80,7 +80,6 @@ function create_room(){
         for(var i = 0; i <= d.attendees.length-1; i++){
         	$('#usersOffline').append('<li>'+d.attendees[i]+'</li>');
         }
-    	$('#usersOffline').prepend('<li class="online">'+d.myself+'</li>');
 
 		$('.slide_viewport').hide();
 		$('#chat').show();
@@ -170,12 +169,12 @@ function chat_management(){
 
 	// Keyboard 'enter' to valid msg
 	document.addEventListener('keyup', function(e){
-		if(e.keyCode === 13) send();
+		if(e.keyCode === 13 && $('#user_msg').val() != '') send();
 	});
 
 	// Display msg
 	socket.on('receive', function(msg){
-		$('#conversation').prepend('<li><strong>'+msg.author+'</strong><br>'+msg.msg+'</li>');
+		$('#conversation').append('<li><strong>'+msg.author+'</strong><br>'+msg.msg+'</li>');
 	});
 } // chat_management
 
