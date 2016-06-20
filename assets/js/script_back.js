@@ -138,6 +138,9 @@ function chat_management(){
 
 		// clear input
 		$('#user_msg').val('');
+
+        var _chatRoom = document.getElementById("conversation");
+        _chatRoom.scrollTop = _chatRoom.scrollHeight;
 	}
 
 	// Keyboard 'enter' to valid msg
