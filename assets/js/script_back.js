@@ -80,6 +80,7 @@ function create_room(){
         for(var i = 0; i <= d.attendees.length-1; i++){
         	$('#usersOffline').append('<li>'+d.attendees[i]+'</li>');
         }
+    	$('#usersOffline').prepend('<li class="online">'+d.myself+'</li>');
 
 		$('.slide_viewport').hide();
 		$('#chat').show();
@@ -88,6 +89,33 @@ function create_room(){
 
 
 function join_room(){
+	// Hide form on load
+	$('#login').hide();
+
+	// Parse url
+	(function($){
+	    $.getQuery = function( query ) {
+	        query = query.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+	        var expr = "[\\?&]"+query+"=([^&#]*)";
+	        var regex = new RegExp( expr );
+	        var results = regex.exec( window.location.href );
+	        if( results !== null ) {
+	            return results[1];
+	            return decodeURIComponent(results[1].replace(/\+/g, " "));
+	        } else {
+	            return false;
+	        }
+	    };
+	})(jQuery);
+
+	// Display login form if email in parameter
+	var _test_query = $.getQuery('email');
+    if ( _test_query ) {
+    	$('#login').show();
+    	$('.slide_viewport').hide();
+    	$('.steps').hide();
+	}
+
 	// LOGIN FOR USER WITH URL EMAIL PARAM
 	$('#form_login').submit(function () {
         var d = $(this).serializeObject();
