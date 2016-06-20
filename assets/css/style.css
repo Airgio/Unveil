@@ -383,17 +383,18 @@ ____________________________________*/
     margin: 0 auto;
 }
 #usersOffline li {
-    list-style:none;
-    color: white;
+    list-style: none;
+    color: #5a5a5a;
     opacity: 0.5;
     font-size: 0.6em;
     letter-spacing: 0.1em;
     padding: 2px 5px;
-    border-left: 2px solid transparent;
+    border-left: 2px solid #5a5a5a;
     box-sizing: border-box;
     display: inline-block;
-    overflow:hidden;
+    overflow: hidden;
     width: 50%;
+    transition:all ease-out 0.2s;
 }
 #usersOffline li.online {
     color: #05d9a9;
