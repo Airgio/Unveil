@@ -370,3 +370,21 @@ ____________________________________*/
     background-color: #04e1af;
     color:white;
 }
+#usersOffline {
+    max-height:160px;
+}
+#usersOffline li {
+    list-style:none;
+    color: white;
+    opacity: 0.5;
+    font-size: 0.6em;
+    letter-spacing: 0.1em;
+    padding: 2px 5px;
+    border-left: 2px solid transparent;
+}
+#usersOffline li.online {
+    color: #05d9a9;
+    opacity: 1;
+    padding: 2px 5px;
+    border-left: 2px solid #05d9a9;
+}
