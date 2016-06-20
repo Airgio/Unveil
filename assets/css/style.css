@@ -331,6 +331,7 @@ ____________________________________*/
 
 #login {
     text-align:center;
+    display:none;
     padding:5%;
 }
 #user_msg {
@@ -401,4 +402,16 @@ ____________________________________*/
     opacity: 1;
     padding: 2px 5px;
     border-left: 2px solid #05d9a9;
+}
+#unveil {
+    display: none;
+    width: 90%;
+    position: fixed;
+    left: 5%;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    top: 70px;
+    background-color: #05d9a9;
+    border-radius: 2px;
 }
