@@ -1,8 +1,9 @@
 module.exports = function(app){
 	return {
-		send : function(msg){
-			console.log(msg);
-			app.socket.io.emit('receive', msg);
+		send : function(data){
+			console.log(data);
+
+            app.socket.io.to(data.room).emit('receive', data);
 		}
 	}
 }

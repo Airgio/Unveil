@@ -5,6 +5,7 @@ var user_email = url.substring(url.lastIndexOf('=')+1) || 0;
 var clientId = '605751688227-u0fliiq32028oh6uim9mguae8hqfb7jj.apps.googleusercontent.com';
 var apiKey = 'AIzaSyAOpIxefwOLJi7luSaFxNNSjNn7EjJWru0';
 var scopes = 'https://www.googleapis.com/auth/contacts.readonly';
+var room_owner = '';
 
 function display_contacts(){
 	// Create list of contact
@@ -73,6 +74,8 @@ function create_room(){
 	socket.on('created', function (d) {
 		console.log(d);
 
+        room_owner = d.owner;
+
 
 	
 		$('#usersOffline').empty();
@@ -129,7 +132,7 @@ function join_room(){
     });
 
 	socket.on('joined', function (d) {
-
+        room_owner = d.room;
         if(d.success) {
         	$('#login').hide();
         	$('#chat').show();
@@ -142,6 +145,7 @@ function show_connected_users(){
 	socket.on('added', function (d) {
         console.log(d);
 		$('#usersOffline').empty();
+        room_owner = d.owner;
 
         for(var i = 0; i <= d.attendees.length-1; i++){
         	$('#usersOffline').append('<li>'+d.attendees[i]+'</li>');
@@ -162,6 +166,7 @@ function chat_management(){
 		var _m = {};
 		_m.msg = $('#user_msg').val();
 		_m.author = sessionStorage.userEmail;
+        _m.room = room_owner;
 		socket.emit('send', _m);
 
 		// clear input
