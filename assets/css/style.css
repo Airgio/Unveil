@@ -329,6 +329,10 @@ ____________________________________*/
     display:none;
 }
 
+#login {
+    text-align:center;
+    padding:5%;
+}
 #user_msg {
     background-color: rgba(0,0,0,0.4);
     border: none;
@@ -371,7 +375,12 @@ ____________________________________*/
     color:white;
 }
 #usersOffline {
-    max-height:160px;
+    max-height: 160px;
+    padding-left: 0;
+    display: block;
+    width: 90%;
+    overflow: scroll;
+    margin: 0 auto;
 }
 #usersOffline li {
     list-style:none;
@@ -381,6 +390,10 @@ ____________________________________*/
     letter-spacing: 0.1em;
     padding: 2px 5px;
     border-left: 2px solid transparent;
+    box-sizing: border-box;
+    display: inline-block;
+    overflow:hidden;
+    width: 50%;
 }
 #usersOffline li.online {
     color: #05d9a9;

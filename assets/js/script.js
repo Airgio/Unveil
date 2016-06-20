@@ -53,7 +53,7 @@ $(function () {
 
 
     //Step 2 next step button appearance
-
+    
     var $fields = $("#form_create input");
 
     $fields.keyup(function() {
