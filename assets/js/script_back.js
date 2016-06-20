@@ -58,7 +58,7 @@ function contact_management(){
 function create_room(){
 
 	// Create invitation
-    $('#launch_room').click(function () {
+    $('#form_create').submit(function () {
 		event.preventDefault();
 		var d = $(this).serializeObject();
 			d.attendees = JSON.parse(sessionStorage.invitations);
@@ -188,7 +188,8 @@ function unveil_secret(){
 	// UNVEIL
 	socket.on('unveil', function (d) {
         console.log(d);
-        $('#unveil').show().append(d.message);
+        $('#unveil').show();
+        $('#unveil > p').append(d.message);
     });
 }
 
