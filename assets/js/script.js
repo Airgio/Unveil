@@ -51,6 +51,9 @@ $(function () {
         $('#create_room').hide();
     });
 
+    $('#unveil i').click(function(){
+        $('#unveil').hide();
+    });
 
     //Step 2 next step button appearance
 

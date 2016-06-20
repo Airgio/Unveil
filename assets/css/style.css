@@ -380,7 +380,6 @@ ____________________________________*/
     padding-left: 0;
     display: block;
     width: 90%;
-    overflow: scroll;
     margin: 0 auto;
 }
 #usersOffline li {
@@ -414,4 +413,14 @@ ____________________________________*/
     top: 70px;
     background-color: #05d9a9;
     border-radius: 2px;
+}
+
+#unveil i {
+position:relative;
+    font-style: normal;
+    letter-spacing: 0;
+    font-family: sans-serif;
+    margin: 10px auto;
+    bottom: 0;
+    left: 0;
 }
